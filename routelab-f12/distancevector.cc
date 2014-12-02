@@ -79,12 +79,11 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
     // the link change could have drastically increased the cost of our link. We'll now look through all our
     // neighbors and see who has the smallest path to offer us.
-    deque<Node*> neihbor_nodes = *Node::GetNeighbors();
+    deque<Node*>neihborNodes = *Node::GetNeighbors();
 
-    typedef std::map<int, int>::iterator it_type;
-    for(it_type iterator = neihbor_nodes.begin(); iterator != neihbor_nodes.end(); iterator++)
+    for(auto it = neihborNodes.begin(); it != neihborNodes.end(); it++)
     {
-        int neighbor_node = iterator->first; // Look through every node in the graph
+        int neighbor_node = it->first; // Look through every node in the graph
 
 
         // Look at the distance vectors from this node to every other node in the graph
