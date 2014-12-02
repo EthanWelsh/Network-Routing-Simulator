@@ -1,12 +1,11 @@
 #include "event.h"
 #include "context.h"
 
-Event::Event(double t, EventType e, void *h, void *d) :
-    timestamp(t), etype(e), handler(h), data(d) {}
+Event::Event(double t, EventType e, void *h, void *d) : timestamp(t), etype(e), handler(h), data(d) {}
 
 void Event::Dispatch()
 {
-    switch (etype) { 
+    switch (etype) {
         case DRAW_TOPOLOGY:
             ((Topology*)handler)->DrawTopology();
             break;
@@ -16,7 +15,7 @@ void Event::Dispatch()
         case DRAW_PATH:
             ((SimulationContext*)handler)->DrawPath((Link*)data);
             break;
-        case DUMP_TABLE: 
+        case DUMP_TABLE:
             ((SimulationContext*)handler)->DumpTable((Node*)data);
             break;
 
@@ -67,26 +66,26 @@ void Event::Dispatch()
 ostream & Event::Print(ostream &os) const
 {
     os << "Event(timestamp=" << timestamp << ", etype=" <<
-        (etype==ADD_NODE ? "ADD_NODE" :
-        etype==DELETE_NODE ? "DELETE_NODE" :
-        etype==ADD_LINK ? "ADD_LINK" :
-        etype==DELETE_LINK ? "DELETE_LINK" :
-        etype==CHANGE_NODE ? "CHANGE_NODE" :
-        etype==CHANGE_LINK ? "CHANGE_LINK" :
+            (etype==ADD_NODE ? "ADD_NODE" :
+                    etype==DELETE_NODE ? "DELETE_NODE" :
+                            etype==ADD_LINK ? "ADD_LINK" :
+                                    etype==DELETE_LINK ? "DELETE_LINK" :
+                                            etype==CHANGE_NODE ? "CHANGE_NODE" :
+                                                    etype==CHANGE_LINK ? "CHANGE_LINK" :
 #if 0
         etype==WRITE_TOPOLOGY ? "WRITE_TOPOLOGY" :
         etype==WRITE_TREE ? "WRITE_TREE" :
 #endif
-        etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
-        etype==DRAW_TREE ? "DRAW_TREE" :
-        etype==DRAW_PATH ? "DRAW_PATH" :
-        etype==DUMP_TABLE ? "DUMP_TABLE" :
-        etype==TIMEOUT ? "TIMEOUT" :
-        etype==PRINT ? "PRINT" :
-        etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
-        "UNKNOWN") << ", ";
+                                                                    etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
+                                                                    etype==DRAW_TREE ? "DRAW_TREE" :
+                                                                            etype==DRAW_PATH ? "DRAW_PATH" :
+                                                                                    etype==DUMP_TABLE ? "DUMP_TABLE" :
+                                                                                            etype==TIMEOUT ? "TIMEOUT" :
+                                                                                                    etype==PRINT ? "PRINT" :
+                                                                                                            etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
+                                                                                                                    "UNKNOWN") << ", ";
 
-    switch (etype) { 
+    switch (etype) {
         case DRAW_TOPOLOGY:
             break;
         case ADD_NODE:
@@ -140,8 +139,8 @@ double Event::GetTimeStamp()
 
 Event::~Event()
 {
-    if (data) { 
-        switch (etype) { 
+    if (data) {
+        switch (etype) {
             case DRAW_TOPOLOGY:
                 break;
 #if 0

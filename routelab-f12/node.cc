@@ -4,39 +4,39 @@
 #include "linkstate.h"
 #include "distancevector.h"
 
-Node::Node(unsigned n, SimulationContext *c, double b, double l) : 
-    number(n), context(c), bw(b), lat(l), routing_table() 
+Node::Node(unsigned n, SimulationContext *c, double b, double l) :
+        number(n), context(c), bw(b), lat(l), routing_table()
 {}
 
 Node::Node() {
-    throw GeneralException(); 
+    throw GeneralException();
 }
 
-Node::Node(const Node &rhs) : 
-  number(rhs.number), context(rhs.context), bw(rhs.bw), lat(rhs.lat),
-  routing_table(rhs.routing_table) {}
+Node::Node(const Node &rhs) :
+        number(rhs.number), context(rhs.context), bw(rhs.bw), lat(rhs.lat),
+        routing_table(rhs.routing_table) {}
 
-Node & Node::operator=(const Node &rhs) 
+Node & Node::operator=(const Node &rhs)
 {
-  return *(new(this)Node(rhs));
+    return *(new(this)Node(rhs));
 }
 
-void Node::SetNumber(unsigned n) 
+void Node::SetNumber(unsigned n)
 { number=n;}
 
-unsigned Node::GetNumber() const 
+unsigned Node::GetNumber() const
 { return number;}
 
 void Node::SetLatency(double l)
 { lat=l;}
 
-double Node::GetLatency() const 
+double Node::GetLatency() const
 { return lat;}
 
 void Node::SetBW(double b)
 { bw=b;}
 
-double Node::GetBW() const 
+double Node::GetBW() const
 { return bw;}
 
 Node::~Node()
@@ -57,8 +57,8 @@ void Node::SendToNeighbors(RoutingMessage* m)
         for (it_l = links.begin(); it_l != links.end(); it_l++) {
             if ((*it_n)->GetNumber() == (*it_l)->GetDest()) {
                 context->PostEvent(
-                    new Event(context->GetTime() + (*it_l)->GetLatency(), ROUTING_MESSAGE_ARRIVAL, 
-                        (void*)*it_n, (void*)m)
+                        new Event(context->GetTime() + (*it_l)->GetLatency(), ROUTING_MESSAGE_ARRIVAL,
+                                (void*)*it_n, (void*)m)
                 );
                 break;
             }
@@ -76,8 +76,8 @@ void Node::SendToNeighbor(Node* n, RoutingMessage* m)
     for (it = links.begin(); it != links.end(); it++) {
         if (n->GetNumber() == (*it)->GetDest()) {
             context->PostEvent(
-                new Event(context->GetTime() + (*it)->GetLatency(), ROUTING_MESSAGE_ARRIVAL, 
-                    (void*)n, (void*)m)
+                    new Event(context->GetTime() + (*it)->GetLatency(), ROUTING_MESSAGE_ARRIVAL,
+                            (void*)n, (void*)m)
             );
             break;
         }
@@ -139,7 +139,7 @@ Table *Node::GetRoutingTable()
 ostream & Node::Print(ostream &os) const
 {
     os << "Node(number="<<number<<", lat="<<lat<<", bw=" << bw
-        << ", routing_table=" << routing_table << ")";
+            << ", routing_table=" << routing_table << ")";
     return os;
 }
 
@@ -152,4 +152,3 @@ Node* createNode(unsigned n, SimulationContext *c, double b, double l) {
     return new Node(n, c, b, l);
 #endif
 }
-
