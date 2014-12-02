@@ -79,11 +79,11 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
     // the link change could have drastically increased the cost of our link. We'll now look through all our
     // neighbors and see who has the smallest path to offer us.
-    deque<Node*>neihborNodes = *Node::GetNeighbors();
+    deque<Node*>neighborNodes = *Node::GetNeighbors();
 
     deque<Node *>::iterator it;
 
-    for (it = neihborNodes.begin(); it != neihborNodes.end(); ++it)
+    for (it = neighborNodes.begin(); it != neighborNodes.end(); ++it)
     {
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
@@ -92,7 +92,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         map<int, TopoLink> &node_vector = routing_table.topo[neighbor_node];
 
         // Find the distance specifically associated with the destination node of the changed link.
-        // The cost is the cost to your neighbor plus the distance from your neihbor to the destination
+        // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
         int cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
         int cost_in_table_at_current = routing_table.cost[link_dest];
 
