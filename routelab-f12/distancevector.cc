@@ -81,9 +81,11 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // neighbors and see who has the smallest path to offer us.
     deque<Node*>neihborNodes = *Node::GetNeighbors();
 
-    for(auto it = neihborNodes.begin(); it != neihborNodes.end(); it++)
+    deque<Node *>::iterator it;
+
+    for (it = neihborNodes.begin(); it != neihborNodes.end(); ++it)
     {
-        int neighbor_node = it->first; // Look through every node in the graph
+        int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
 
         // Look at the distance vectors from this node to every other node in the graph
