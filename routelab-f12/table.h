@@ -39,18 +39,21 @@ class Table
 
     map<int, map< int, TopoLink > > topo;
 
-    map<int, int> cost;
-    map<int, int> hop;
+
 
 
     public:
+
+        map<int, int> cost;
+        map<int, int> hop;
+
         Table();
 
         Table(const Table &);
         Table(deque<Link *> *links);
 
         Table &operator=(const Table &);
-
+        int getNextHop(unsigned);
 
         ostream &Print(ostream &os) const;
 

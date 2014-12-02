@@ -70,14 +70,23 @@ Table &Table::operator=(const Table &rhs)
  */
 void Table::updateTable(unsigned int dest, unsigned int next, int latency)
 {
-
     if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
-
-    cost.at(dest) = latency;
-    hop.at(dest) = next;
+    cost[dest] = latency;
+    hop[dest] = next;
 }
 
-
+int Table::getNextHop(unsigned dest)
+{
+    if(hop.find(dest) == hop.end())
+    {
+        cerr<<"No entry found in the hop map. Could not determine next hop. Returning -1." << endl;
+        return -1;
+    }
+    else
+    {
+        return hop[dest];
+    }
+}
 
 ostream & Table::Print(ostream &os) const
 {
