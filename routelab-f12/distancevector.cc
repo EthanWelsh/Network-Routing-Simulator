@@ -37,17 +37,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
     cerr << *this << ": Link Update: " << *l << endl;
 
-    // Q: Will only the latency change, or can other things such as the source
-    //    and destination change too?
-
-    // Q: When we built the table that we have at the time that
-    //    LinkHasBeenUpdated is called, we very likely passed over certain
-    //    paths because they were higher cost than what we had already.
-    //    However, now that this change has been made, some of the paths that
-    //    we initially rejected may now be preferable to the ones that we have.
-    //    Do we need to atone for this immediately, and if so, how?
-
-
     // Get the information from the link that has changed.
     int link_src = l->GetSrc();
     int link_dest = l->GetDest();
@@ -121,7 +110,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     }
 
     // All our tables are now updated. We have taken account for the change and reselected all our shortest paths
-    // just in case a better one existed. We now need to send a routing message to our neihbors with our new topo
+    // just in case a better one existed. We now need to send a routing message to our neighbors with our new topo
     // so that they can adjust their costs accordingly.
     SendToNeighbors(new RoutingMessage()); // TODO
 }
