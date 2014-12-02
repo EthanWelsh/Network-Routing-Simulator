@@ -21,7 +21,7 @@ ostream &RoutingMessage::Print(ostream &os) const
 }
 #endif
 
-#if defined(LINKSTATE)
+#if defined(DISTANCEVECTOR)
 
 RoutingMessage::RoutingMessage()	// Empty constructor
 {
