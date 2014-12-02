@@ -43,7 +43,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     int link_cost = l->GetLatency();
 
     int table_dest;
-    int table_neighbor;
+    int table_neighbor = l->GetDest();
 
     // Record the old cost that we've recorded about this link.
     int old_cost = routing_table.cost[table_neighbor];
