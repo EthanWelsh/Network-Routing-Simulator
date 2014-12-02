@@ -36,11 +36,7 @@ Table &Table::operator=(const Table &rhs)
 }
 
 #if defined(GENERIC)
-ostream & Table::Print(ostream &os) const
-{
-  os << "Generic Table()";
-  return os;
-}
+
 #endif
 
 #if defined(LINKSTATE)

@@ -14,9 +14,9 @@ struct RoutingMessage {
 
     // Anything else you need
 
-    #if defined(LINKSTATE)
+#if defined(LINKSTATE)
     #endif
-    #if defined(DISTANCEVECTOR)
+#if defined(DISTANCEVECTOR)
     #endif
 };
 
