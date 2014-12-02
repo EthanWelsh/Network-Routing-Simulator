@@ -12,16 +12,19 @@ Table::Table(const Table &rhs)
     *this = rhs;
 }
 
+/*
+ This constructor will be used by our implementation of DV. It will start by adding ourselves to the forwarding table,
+ aloung with the corresponding weights to each node. In addition to this, we'll fill out our hop table appropriately. In
+ order to run this, you'll pass in this.getOutGoingConnections() from the node that you're trying to make this table for.
+ */
 Table::Table(deque<Link *> *links)
 {
-    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i)
+    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i) // TODO why ++i instead of i++???
     {
         int dest = (*i)->GetDest();
         int latency = (*i)->GetLatency();
 
         updateTable(dest, dest, latency);
-
-        // WriteTable(dest, dest, latency); TODO
     }
     delete links;
 }
@@ -61,7 +64,10 @@ Table &Table::operator=(const Table &rhs)
 
 //#if defined(DISTANCEVECTOR)
 
-
+/*
+ Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
+ what our nextHop is in order to get the shortest cost path.
+ */
 void Table::updateTable(unsigned int dest, unsigned int next, int latency)
 {
 
