@@ -37,13 +37,14 @@ class Table
     private:
 
 
-    map<int, map< int, TopoLink > > topo;
+
 
 
 
 
     public:
 
+        map<int, map< int, TopoLink > > topo;
         map<int, int> cost;
         map<int, int> hop;
 

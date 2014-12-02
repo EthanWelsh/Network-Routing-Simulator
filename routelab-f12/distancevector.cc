@@ -36,27 +36,6 @@ DistanceVector::~DistanceVector()
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
     cerr << *this << ": Link Update: " << *l << endl;
-    // Q: We only need to send the RoutingMessage when we ourselves update one
-    //    of our links, correct?
-
-    // Q: Are we only responsible for updating our own forwarding table? Do we
-    //    need to worry about changing any of the connections in our node or
-    //    will the framework do this for us?
-
-    // Q: Will only the latency change, or can other things such as the source
-    //    and destination change too?
-
-    // Q: When we built the table that we have at the time that
-    //    LinkHasBeenUpdated is called, we very likely passed over certain
-    //    paths because they were higher cost than what we had already.
-    //    However, now that this change has been made, some of the paths that
-    //    we initially rejected may now be preferable to the ones that we have.
-    //    Do we need to atone for this immediately, and if so, how?
-
-    // We should look through our hop table. When we find an entry where the
-    // hop uses the node which is the DESTINATION of the passed in link, we
-    // should change our table accordingly.
-
 
     // Get the information from the link that has changed.
     int link_src = l->GetSrc();
@@ -71,6 +50,10 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     int change_in_cost = link_cost - old_cost;
 
 
+    // We should look through our hop table. When we find an entry where the
+    // hop uses the node which is the DESTINATION of the passed in link, we
+    // should change our table accordingly.
+
     // Iterate through our map in order to find where we need to make adjustments to our paths costs
     // because of the changed link.
     typedef std::map<int, int>::iterator it_type;
@@ -84,16 +67,52 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
             // changed connection. We now need to adjust our cost for this path accordingly.
 
             routing_table.cost[table_dest] += change_in_cost;
-        }
 
-        
-        
-        
-        
+            // At this point our map reflects the changes in cost that have been caused by the connection
+            // change. We now need to update topo to reflect the new change there as well
+            map<int, TopoLink> &col = routing_table.topo[link_src];
+            TopoLink &toChange = col[table_dest];
+            toChange.cost += link_cost;
+        }
     }
 
+    // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
+    // the link change could have drastically increased the cost of our link. We'll now look through all our
+    // neighbors and see who has the smallest path to offer us.
+    deque<Node*> neihbor_nodes = *Node::GetNeighbors();
 
-    SendToNeighbors(new RoutingMessage());
+    typedef std::map<int, int>::iterator it_type;
+    for(it_type iterator = neihbor_nodes.begin(); iterator != neihbor_nodes.end(); iterator++)
+    {
+        int neighbor_node = iterator->first; // Look through every node in the graph
+
+
+        // Look at the distance vectors from this node to every other node in the graph
+        map<int, TopoLink> &node_vector = routing_table.topo[neighbor_node];
+
+        // Find the distance specifically associated with the destination node of the changed link.
+        // The cost is the cost to your neighbor plus the distance from your neihbor to the destination
+        int cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
+        int cost_in_table_at_current = routing_table.cost[link_dest];
+
+        // Compare the cost that we have at current to this node with the distance our neighbor is advertising
+        if(cost_to_dest_through_node < cost_in_table_at_current)
+        {
+            // Change your cost and hop table.
+            routing_table.cost[link_dest] = cost_to_dest_through_node;
+            routing_table.hop[link_dest] = neighbor_node;
+
+            // Change topo to reflect the changed in cost and hop.
+            map<int, TopoLink> &col1 = routing_table.topo[link_src];
+            TopoLink &toChange1 = col1[link_dest];
+            toChange1.cost = cost_to_dest_through_node;
+        }
+    }
+
+    // All our tables are now updated. We have taken account for the change and reselected all our shortest paths
+    // just in case a better one existed. We now need to send a routing message to our neighbors with our new topo
+    // so that they can adjust their costs accordingly.
+    SendToNeighbors(new RoutingMessage()); // TODO
 }
 
 
