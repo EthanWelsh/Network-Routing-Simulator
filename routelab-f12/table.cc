@@ -43,7 +43,7 @@ Table &Table::operator=(const Table &rhs)
 #endif
 
 #if defined(LINKSTATE)
-	int Table::UpdateLink(const Link *link)
+	/*int Table::UpdateLink(const Link *link)
 	{
 		int src = link->GetSrc();
 		int dest = link->GetDest();
@@ -59,7 +59,7 @@ Table &Table::operator=(const Table &rhs)
     {
       os << "LinkState Table()";
       return os;
-    }
+    }*/
 #endif
 
 //#if defined(DISTANCEVECTOR)
