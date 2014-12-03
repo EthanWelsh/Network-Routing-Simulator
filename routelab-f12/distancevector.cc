@@ -60,7 +60,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // because of the changed link.
 
 
-    typedef std::map<int, int>::iterator it_type;
+    typedef std::map<unsigned int, unsigned int>::iterator it_type;
     for(it_type iterator = routing_table.hop.begin(); iterator != routing_table.hop.end(); iterator++)
     {
         table_dest = iterator->first;
@@ -127,7 +127,7 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
     // Your neighbor changed their table and has something to tell you. We'll
     // look over their cost map (called distanceVector).
-    map<int, double> distanceVector = m->getDistanceVector();
+    map<unsigned int, double> distanceVector = m->getDistanceVector();
 
     // Look over every entry in their distance vector. If we find any cost path
     // that is better than the entry that we already have (or if we have yet to
@@ -136,7 +136,7 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
     bool weMadeAChange = false;
 
-    map<int, double>::iterator it;
+    map<unsigned int, double>::iterator it;
     for (it = distanceVector.begin(); it != distanceVector.end(); ++it)
     {
         unsigned int step_node = m->getSrc();
