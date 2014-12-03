@@ -16,7 +16,6 @@ public:
     map<int, double> getDistanceVector();
     unsigned int getSrc();
 
-
     Table costTable;
     unsigned int src_node;
 
@@ -30,3 +29,5 @@ public:
 
 inline ostream & operator<<(ostream &os, const RoutingMessage & m) { return m.Print(os);}
 
+
+#endif

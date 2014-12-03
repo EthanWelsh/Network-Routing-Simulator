@@ -30,7 +30,7 @@ map<int, double> RoutingMessage::getDistanceVector()
     return costTable.cost;
 }
 
-unsigned int getSrc()
+unsigned int RoutingMessage::getSrc()
 {
     return src_node;
 }
