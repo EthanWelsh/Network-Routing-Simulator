@@ -111,7 +111,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
     // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
     // that they can adjust their costs accordingly.
-    SendToNeighbors(new RoutingMessage(routing_table));
+    SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
 }
 
 
@@ -124,7 +124,54 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
     cerr << *this << " got a routing message: " << *m << " (ignored)" << endl;
+
+    // Your neighbor changed their table and has something to tell you. We'll
+    // look over their cost map (called distanceVector).
+    map<int, double> distanceVector = m->getDistanceVector();
+
+    // Look over every entry in their distance vector. If we find any cost path
+    // that is better than the entry that we already have (or if we have yet to
+    // establish any connection with the node at all), then we'll update our
+    // tables accordingly
+
+    map<int, double>::iterator it;
+    for (it = distanceVector.begin(); it != distanceVector.end(); ++it)
+    {
+        unsigned int step_node = m->getSrc();
+        unsigned int destination_node = it->first;
+
+        double cost_to_neighbor = costToNeighbor(step_node);
+        double reported_cost = it->second;
+        double total_cost = cost_to_neighbor + reported_cost;
+
+        if(routing_table.cost.find(destination_node) == routing_table.cost.end())
+        { // If we don't yet have a path to this node.
+            routing_table.updateTable(destination_node, step_node, reported_cost);
+        }
+        else if(total_cost < routing_table.cost[destination_node])
+        {
+            routing_table.updateTable(destination_node, step_node, reported_cost);
+        }
+    }
+
 }
+
+int costToNeighbor(int neighborNum)
+{
+    int cost;
+
+    deque<Link *> *myNeighbors = GetOutgoingLinks();
+
+    for(int i = 0; i < myNeighbors->size(); i++)
+    {
+        int thisLink = myNeighbors->at(i)->GetDest();
+        if(neighborNum == thisLink)
+        {
+            return myNeighbors->at(i)->GetLatency();
+        }
+    }
+}
+
 
 void DistanceVector::TimeOut()
 {
@@ -150,13 +197,12 @@ Node *DistanceVector::GetNextHop(Node *destination)
  table. The framework will eventually delete the table. We expect your routing
  table to be able to print itself.
  */
-Table *DistanceVector::GetRoutingTable()
-{
-    return NULL;
-}
+
 
 ostream &DistanceVector::Print(ostream &os) const
 {
     Node::Print(os);
     return os;
 }
+
+

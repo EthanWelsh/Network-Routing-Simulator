@@ -18,8 +18,10 @@ class DistanceVector: public Node {
         void ProcessIncomingRoutingMessage(RoutingMessage *m);
         void TimeOut();
         Node* GetNextHop(Node* destination);
-        Table* GetRoutingTable();
-        ostream & Print(ostream & os) const;
+        Table* getRoutingTable();
+        int costToNeighbor(int neighborNum);
+
+    ostream & Print(ostream & os) const;
 
         // Anything else
 };

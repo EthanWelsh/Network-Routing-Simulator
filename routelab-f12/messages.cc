@@ -13,9 +13,10 @@ RoutingMessage & RoutingMessage::operator=(const RoutingMessage &rhs)
     return *this;
 }
 
-RoutingMessage::RoutingMessage(Table &t) // Initialize with src, dest, and latency
+RoutingMessage::RoutingMessage(Table &t, unsigned int src) // Initialize with src, dest, and latency
 {
     costTable = t;
+    src_node = src;
 }
 
 ostream &RoutingMessage::Print(ostream &os) const
@@ -24,7 +25,12 @@ ostream &RoutingMessage::Print(ostream &os) const
   return os;
 }
 
-map<int, double> getDistanceVector()
+map<int, double> RoutingMessage::getDistanceVector()
 {
     return costTable.cost;
+}
+
+unsigned int getSrc()
+{
+    return src_node;
 }

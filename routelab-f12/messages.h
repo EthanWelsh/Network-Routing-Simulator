@@ -9,7 +9,10 @@
 struct RoutingMessage {
     RoutingMessage();
     RoutingMessage(const RoutingMessage &rhs);
-    RoutingMessage(Table &t);
+    RoutingMessage(Table &t, unsigned int src);
+
+    map<int, double> getDistanceVector();
+    unsigned int getSrc();
 
 
     RoutingMessage &operator=(const RoutingMessage &rhs);
@@ -21,5 +24,6 @@ struct RoutingMessage {
 };
 
 inline ostream & operator<<(ostream &os, const RoutingMessage & m) { return m.Print(os);}
+
 Table costTable;
-map<int, double> getDistanceVector();
+unsigned int src_node;
