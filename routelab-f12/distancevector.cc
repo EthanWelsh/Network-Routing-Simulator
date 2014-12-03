@@ -70,7 +70,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
             // At this point our map reflects the changes in cost that have been caused by the connection
             // change. We now need to update topo to reflect the new change there as well
-            map<int, TopoLink> &col = routing_table.topo[link_src];
+            map<int, TopoLink> &col = routing_table.distance_vectors[link_src];
             TopoLink &toChange = col[table_dest];
             toChange.cost += link_cost;
         }
@@ -89,7 +89,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
 
         // Look at the distance vectors from this node to every other node in the graph
-        map<int, TopoLink> &node_vector = routing_table.topo[neighbor_node];
+        map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
 
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
@@ -104,7 +104,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
             routing_table.hop[link_dest] = neighbor_node;
 
             // Change topo to reflect the changed in cost and hop.
-            map<int, TopoLink> &col1 = routing_table.topo[link_src];
+            map<int, TopoLink> &col1 = routing_table.distance_vectors[link_src];
             TopoLink &toChange1 = col1[link_dest];
             toChange1.cost = cost_to_dest_through_node;
         }
