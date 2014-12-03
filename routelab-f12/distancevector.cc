@@ -42,11 +42,10 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     int link_dest = l->GetDest();
     int link_cost = l->GetLatency();
 
-    int table_dest;
-    int table_neighbor = l->GetDest();
+
 
     // Record the old cost that we've recorded about this link.
-    int old_cost = routing_table.cost[table_neighbor];
+    int old_cost = routing_table.cost[link_dest];
     int change_in_cost = link_cost - old_cost;
 
 
@@ -54,8 +53,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // hop uses the node which is the DESTINATION of the passed in link, we
     // should change our table accordingly.
 
+    int table_dest;
+    int table_neighbor;
+
     // Iterate through our map in order to find where we need to make adjustments to our paths costs
     // because of the changed link.
+
+
     typedef std::map<int, int>::iterator it_type;
     for(it_type iterator = routing_table.hop.begin(); iterator != routing_table.hop.end(); iterator++)
     {

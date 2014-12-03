@@ -46,7 +46,7 @@ class Table
 
 		map<int, map< int, TopoLink > > distance_vectors;
         map<int, map< int, TopoLink > > topo;
-        map<int, int> cost;
+        map<int, double> cost;
         map<int, int> hop;
 
         Table();
@@ -73,7 +73,7 @@ class Table
 
         #endif
 
-    void updateTable(unsigned int dest, unsigned int next, int latency);
+    void updateTable(unsigned int dest, unsigned int next, double latency);
 
 };
 

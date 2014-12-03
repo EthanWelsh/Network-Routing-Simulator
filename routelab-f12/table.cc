@@ -21,8 +21,8 @@ Table::Table(deque<Link *> *links)
 {
     for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i) // TODO why ++i instead of i++???
     {
-        int dest = (*i)->GetDest();
-        int latency = (*i)->GetLatency();
+        unsigned int dest = (*i)->GetDest();
+        double latency = (*i)->GetLatency();
 
         updateTable(dest, dest, latency);
     }
@@ -68,7 +68,7 @@ Table &Table::operator=(const Table &rhs)
  Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
  what our nextHop is in order to get the shortest cost path.
  */
-void Table::updateTable(unsigned int dest, unsigned int next, int latency)
+void Table::updateTable(unsigned int dest, unsigned int next, double latency)
 {
     if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
     cost[dest] = latency;
