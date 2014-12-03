@@ -165,20 +165,21 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
 }
 
-int costToNeighbor(int neighborNum)
+int DistanceVector::costToNeighbor(int neighborNum)
 {
     int cost;
 
-    deque<Link *> myNeighbors = GetOutgoingLinks();
+    deque<Link *> *myNeighbors = GetOutgoingLinks();
 
-    for(int i = 0; i < myNeighbors.size(); i++)
+    for(int i = 0; i < myNeighbors->size(); i++)
     {
-        int thisLink = myNeighbors.at(i)->GetDest();
+        int thisLink = myNeighbors->at(i)->GetDest();
         if(neighborNum == thisLink)
         {
-            return myNeighbors.at(i)->GetLatency();
+            return myNeighbors->at(i)->GetLatency();
         }
     }
+    return -1;
 }
 
 

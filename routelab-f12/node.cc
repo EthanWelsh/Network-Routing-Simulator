@@ -89,7 +89,7 @@ deque<Node*> *Node::GetNeighbors()
     return context->GetNeighbors(this);
 }
 
-deque<Link*> *Node::GetOutgoingLinks()
+deque<Link*>* Node::GetOutgoingLinks()
 {
     return context->GetOutgoingLinks(this);
 }
