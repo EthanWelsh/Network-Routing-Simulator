@@ -123,7 +123,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
  */
 void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
-    cerr << *this << " got a routing message: " << *m << " (ignored)" << endl;
+    cerr << *this << " got a routing message: " << *m << endl;
 
     // Your neighbor changed their table and has something to tell you. We'll
     // look over their cost map (called distanceVector).
