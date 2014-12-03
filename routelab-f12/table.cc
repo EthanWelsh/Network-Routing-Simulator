@@ -102,7 +102,8 @@ ostream & Table::Print(ostream &os) const
     {
         int dest = it->first;
         int cost_to = it->second;
-        os << "|     "<<dest<<"     |     "<<cost_to<<"     |"<<endl;
+        if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+        else os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
     }
     os << "|======================|"<<endl;
 
@@ -119,7 +120,7 @@ ostream & Table::Print(ostream &os) const
     {
         int dest = it1->first;
         int step = it1->second;
-        os << "|     "<<dest<<"     |     "<<step<<"     |"<<endl;
+        os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
     }
     os << "|======================|"<<endl;
     os <<"*********************************"<<endl;

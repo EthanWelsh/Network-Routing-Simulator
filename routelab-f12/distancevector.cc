@@ -167,7 +167,6 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
 int DistanceVector::costToNeighbor(int neighborNum)
 {
-    int cost;
 
     deque<Link *> *myNeighbors = GetOutgoingLinks();
 
@@ -179,6 +178,7 @@ int DistanceVector::costToNeighbor(int neighborNum)
             return myNeighbors->at(i)->GetLatency();
         }
     }
+    cerr<<"Error! You asked for the cost to "<<neighborNum<<" but I can't find it."<<endl;
     return -1;
 }
 
