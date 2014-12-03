@@ -46,8 +46,8 @@ class Table
 
 		map<int, map< int, TopoLink > > distance_vectors;
         map<int, map< int, TopoLink > > topo;
-        map<int, double> cost;
-        map<int, int> hop;
+        map<unsigned int, double> cost;
+        map<unsigned int, unsigned int> hop;
 
         Table();
 

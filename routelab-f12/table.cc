@@ -97,11 +97,11 @@ ostream & Table::Print(ostream &os) const
     os << "|======================|" << endl;
     os << "|         COST         |" << endl;
     os << "|======================|" << endl;
-    map<int, double>::const_iterator it;
+    map<unsigned int, double>::const_iterator it;
     for (it = cost.begin(); it != cost.end(); ++it)
     {
-        int dest = it->first;
-        int cost_to = it->second;
+        unsigned int dest = it->first;
+        unsigned int cost_to = it->second;
         if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
         else os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
     }
@@ -115,11 +115,11 @@ ostream & Table::Print(ostream &os) const
 
     // map<int, int> hop;
 
-    map<int, int>::const_iterator it1;
+    map<unsigned int, unsigned int>::const_iterator it1;
     for (it1 = hop.begin(); it1 != hop.end(); ++it1)
     {
-        int dest = it1->first;
-        int step = it1->second;
+        unsigned int dest = it1->first;
+        unsigned int step = it1->second;
         os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
     }
     os << "|======================|"<<endl;

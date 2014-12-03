@@ -13,7 +13,7 @@ struct RoutingMessage {
 
 
 public:
-    map<int, double> getDistanceVector();
+    map<unsigned int, double> getDistanceVector();
     unsigned int getSrc();
 
     Table costTable;

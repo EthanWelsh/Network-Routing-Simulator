@@ -25,7 +25,7 @@ ostream &RoutingMessage::Print(ostream &os) const
   return os;
 }
 
-map<int, double> RoutingMessage::getDistanceVector()
+map<unsigned int, double> RoutingMessage::getDistanceVector()
 {
     return costTable.cost;
 }
