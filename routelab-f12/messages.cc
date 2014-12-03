@@ -27,11 +27,11 @@ RoutingMessage::RoutingMessage()	// Empty constructor
 {
 }
 
-RoutingMessage::RoutingMessage(int s, int d, int l)	// Initialize with src, dest, and latency
+RoutingMessage::RoutingMessage(int source, int destination, int len)	// Initialize with src, dest, and latency
 {
-	src = s;
-	dest = d;
-	latency = l;
+	src = source;
+	dest = destination;
+	latency = len;
 }
 
 RoutingMessage::RoutingMessage(const RoutingMessage &rhs)	// Copy from one to another
