@@ -134,6 +134,8 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
     // establish any connection with the node at all), then we'll update our
     // tables accordingly
 
+    bool weMadeAChange = false;
+
     map<int, double>::iterator it;
     for (it = distanceVector.begin(); it != distanceVector.end(); ++it)
     {
@@ -147,11 +149,18 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
         if(routing_table.cost.find(destination_node) == routing_table.cost.end())
         { // If we don't yet have a path to this node.
             routing_table.updateTable(destination_node, step_node, reported_cost);
+            weMadeAChange = true;
         }
         else if(total_cost < routing_table.cost[destination_node])
-        {
+        { // If we found a path that's better than the one we have already
             routing_table.updateTable(destination_node, step_node, reported_cost);
+            weMadeAChange = true;
         }
+    }
+
+    if(weMadeAChange)
+    {
+        SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
     }
 
 }
@@ -160,14 +169,14 @@ int costToNeighbor(int neighborNum)
 {
     int cost;
 
-    deque<Link *> *myNeighbors = GetOutgoingLinks();
+    deque<Link *> myNeighbors = GetOutgoingLinks();
 
-    for(int i = 0; i < myNeighbors->size(); i++)
+    for(int i = 0; i < myNeighbors.size(); i++)
     {
-        int thisLink = myNeighbors->at(i)->GetDest();
+        int thisLink = myNeighbors.at(i)->GetDest();
         if(neighborNum == thisLink)
         {
-            return myNeighbors->at(i)->GetLatency();
+            return myNeighbors.at(i)->GetLatency();
         }
     }
 }
