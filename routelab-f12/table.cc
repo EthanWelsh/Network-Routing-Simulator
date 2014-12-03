@@ -73,6 +73,8 @@ void Table::updateTable(unsigned int dest, unsigned int next, double latency)
     if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
     cost[dest] = latency;
     hop[dest] = next;
+
+    cout<<"My Table"<<this<<endl;
 }
 
 int Table::getNextHop(unsigned dest)
@@ -90,7 +92,37 @@ int Table::getNextHop(unsigned dest)
 
 ostream & Table::Print(ostream &os) const
 {
-    os << "DistanceVector Table()";
+    os << "*****DistanceVector Table()*****" << endl;
+
+    os << "|======================|" << endl;
+    os << "|         COST         |" << endl;
+    os << "|======================|" << endl;
+    map<int, double>::const_iterator it;
+    for (it = cost.begin(); it != cost.end(); ++it)
+    {
+        int dest = it->first;
+        int cost_to = it->second;
+        os << "|     "<<dest<<"     |     "<<cost_to<<"     |"<<endl;
+    }
+    os << "|======================|"<<endl;
+
+    os<<endl;
+
+    os << "|======================|"<<endl;
+    os << "|         HOP          |"<<endl;
+    os << "|======================|"<<endl;
+
+    // map<int, int> hop;
+
+    map<int, int>::const_iterator it1;
+    for (it1 = hop.begin(); it1 != hop.end(); ++it1)
+    {
+        int dest = it1->first;
+        int step = it1->second;
+        os << "|     "<<dest<<"     |     "<<step<<"     |"<<endl;
+    }
+    os << "|======================|"<<endl;
+    os <<"*********************************"<<endl;
     return os;
 }
 
