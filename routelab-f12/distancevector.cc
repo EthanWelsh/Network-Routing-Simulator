@@ -40,13 +40,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // Get the information from the link that has changed.
     int link_src = l->GetSrc();
     int link_dest = l->GetDest();
-    int link_cost = l->GetLatency();
+    double link_cost = l->GetLatency();
 
 
 
     // Record the old cost that we've recorded about this link.
-    int old_cost = routing_table.cost[link_dest];
-    int change_in_cost = link_cost - old_cost;
+    double old_cost = routing_table.cost[link_dest];
+    double change_in_cost = link_cost - old_cost;
 
 
     // We should look through our hop table. When we find an entry where the
@@ -91,14 +91,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     {
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
-
         // Look at the distance vectors from this node to every other node in the graph
         map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
 
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
-        int cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
-        int cost_in_table_at_current = routing_table.cost[link_dest];
+        double cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
+        double cost_in_table_at_current = routing_table.cost[link_dest];
 
         // Compare the cost that we have at current to this node with the distance our neighbor is advertising
         if(cost_to_dest_through_node < cost_in_table_at_current)
@@ -106,18 +105,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
             // Change your cost and hop table.
             routing_table.cost[link_dest] = cost_to_dest_through_node;
             routing_table.hop[link_dest] = neighbor_node;
-
-            // Change topo to reflect the changed in cost and hop.
-            map<int, TopoLink> &col1 = routing_table.distance_vectors[link_src];
-            TopoLink &toChange1 = col1[link_dest];
-            toChange1.cost = cost_to_dest_through_node;
         }
     }
 
-    // All our tables are now updated. We have taken account for the change and reselected all our shortest paths
-    // just in case a better one existed. We now need to send a routing message to our neighbors with our new topo
-    // so that they can adjust their costs accordingly.
-    SendToNeighbors(new RoutingMessage()); // TODO
+    // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
+    // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
+    // that they can adjust their costs accordingly.
+    SendToNeighbors(new RoutingMessage(routing_table));
 }
 
 
