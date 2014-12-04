@@ -35,14 +35,12 @@ DistanceVector::~DistanceVector()
  */
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
-    cerr << *this << ": Link Update: " << *l << endl;
+    cerr << *l << *this << ": Link Update: " << endl << endl;
 
     // Get the information from the link that has changed.
     int link_src = l->GetSrc();
     int link_dest = l->GetDest();
     double link_cost = l->GetLatency();
-
-
 
     // If you got an update on an edge that you haven't seen before.
     if(routing_table.cost.find(link_dest) == routing_table.cost.end())
@@ -65,9 +63,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
     // Iterate through our map in order to find where we need to make adjustments to our paths costs
     // because of the changed link.
-
-
-    typedef std::map<unsigned int, unsigned int>::iterator it_type;
+    typedef std::map<int, int>::iterator it_type;
     for(it_type iterator = routing_table.hop.begin(); iterator != routing_table.hop.end(); iterator++)
     {
         table_dest = iterator->first;
@@ -77,7 +73,8 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         {   // We have found a path to another node that uses the node which is the destination in the
             // changed connection. We now need to adjust our cost for this path accordingly.
 
-            routing_table.cost[table_dest] += change_in_cost;
+            if(routing_table.cost[table_dest] == -1) routing_table.cost[table_dest] = link_cost;
+            else routing_table.cost[table_dest] += change_in_cost;
 
             // At this point our map reflects the changes in cost that have been caused by the connection
             // change. We now need to update topo to reflect the new change there as well
@@ -130,11 +127,17 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
  */
 void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
-    cerr << *this << " got a routing message: " << *m << endl;
+    cerr << endl << endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "distancevector:" << endl << *this << endl <<" got a routing message: " << endl << *m << endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************"<<endl;
+    cerr << endl << endl;
 
     // Your neighbor changed their table and has something to tell you. We'll
     // look over their cost map (called distanceVector).
-    map<unsigned int, double> distanceVector = m->getDistanceVector();
+    map<int, double> distanceVector = m->getDistanceVector();
 
     // Look over every entry in their distance vector. If we find any cost path
     // that is better than the entry that we already have (or if we have yet to
@@ -143,11 +146,11 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
     bool weMadeAChange = false;
 
-    map<unsigned int, double>::iterator it;
+    map<int, double>::iterator it;
     for (it = distanceVector.begin(); it != distanceVector.end(); ++it)
     {
-        unsigned int step_node = m->getSrc();
-        unsigned int destination_node = it->first;
+        int step_node = m->getSrc();
+        int destination_node = it->first;
 
         double cost_to_neighbor = costToNeighbor(step_node);
         double reported_cost = it->second;
@@ -155,6 +158,11 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
         if(routing_table.cost.find(destination_node) == routing_table.cost.end())
         { // If we don't yet have a path to this node.
+            routing_table.updateTable(destination_node, step_node, total_cost);
+            weMadeAChange = true;
+        }
+        else if(routing_table.cost[destination_node] == -1)
+        {
             routing_table.updateTable(destination_node, step_node, total_cost);
             weMadeAChange = true;
         }
@@ -177,7 +185,7 @@ int DistanceVector::costToNeighbor(int neighborNum)
 
     deque<Link *> *myNeighbors = GetOutgoingLinks();
 
-    for(int i = 0; i < myNeighbors->size(); i++)
+    for(unsigned int i = 0; i < myNeighbors->size(); i++)
     {
         int thisLink = myNeighbors->at(i)->GetDest();
         if(neighborNum == thisLink)

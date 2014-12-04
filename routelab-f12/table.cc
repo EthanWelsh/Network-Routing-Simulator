@@ -14,7 +14,7 @@ Table::Table(const Table &rhs)
 
 /*
  This constructor will be used by our implementation of DV. It will start by adding ourselves to the forwarding table,
- aloung with the corresponding weights to each node. In addition to this, we'll fill out our hop table appropriately. In
+ along with the corresponding weights to each node. In addition to this, we'll fill out our hop table appropriately. In
  order to run this, you'll pass in this.getOutGoingConnections() from the node that you're trying to make this table for.
  */
 Table::Table(deque<Link *> *links)
@@ -97,11 +97,11 @@ ostream & Table::Print(ostream &os) const
     os << "|======================|" << endl;
     os << "|         COST         |" << endl;
     os << "|======================|" << endl;
-    map<unsigned int, double>::const_iterator it;
+    map<int, double>::const_iterator it;
     for (it = cost.begin(); it != cost.end(); ++it)
     {
-        unsigned int dest = it->first;
-        unsigned int cost_to = it->second;
+        int dest = it->first;
+        int cost_to = it->second;
         if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
         else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
     }
@@ -115,15 +115,15 @@ ostream & Table::Print(ostream &os) const
 
     // map<int, int> hop;
 
-    map<unsigned int, unsigned int>::const_iterator it1;
+    map<int, int>::const_iterator it1;
     for (it1 = hop.begin(); it1 != hop.end(); ++it1)
     {
-        unsigned int dest = it1->first;
-        unsigned int step = it1->second;
+        int dest = it1->first;
+        int step = it1->second;
         os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
     }
-    os << "|======================|"<<endl;
-    os <<"*********************************"<<endl;
+    os << "|======================|"<<endl << endl;
+
     return os;
 }
 
