@@ -70,7 +70,7 @@ Table &Table::operator=(const Table &rhs)
  */
 void Table::updateTable(unsigned int dest, unsigned int next, double latency)
 {
-    if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
+    //if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
     cost[dest] = latency;
     hop[dest] = next;
 }

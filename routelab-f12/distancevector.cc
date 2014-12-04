@@ -45,9 +45,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // If you got an update on an edge that you haven't seen before.
     if(routing_table.cost.find(link_dest) == routing_table.cost.end())
     {
-        routing_table.cost[link_dest] = link_cost;
+        cerr<<"A"<<endl;
+        //routing_table.cost[link_dest] = link_cost; // TODO SHOULD REMOVE
         routing_table.updateTable(link_dest, link_dest, link_cost);
+
+        cerr<<"B"<<endl;
         cerr<<endl<<*this<<endl;
+        cerr<<"C"<<endl;
 
         return;
     }
