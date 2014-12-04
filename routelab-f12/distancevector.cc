@@ -48,22 +48,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // If you got an update on an edge that you haven't seen before.
     if(routing_table.cost.find(link_dest) == routing_table.cost.end())
     {
-        cerr<<"A"<<endl;
-        //routing_table.cost[link_dest] = link_cost; // TODO SHOULD REMOVE
         routing_table.updateTable(link_dest, link_dest, link_cost);
-
-        cerr<<"B"<<endl;
         cerr<<endl<<*this<<endl;
-        cerr<<"C"<<endl;
-
         return;
     }
 
     // Record the old cost that we've recorded about this link.
     double old_cost = routing_table.cost[link_dest];
-
-    if(routing_table.cost[link_dest] == -1) cerr<< "AAAAAAAAAAAAAAAAAAAA"<<endl;
-
     double change_in_cost = link_cost - old_cost;
 
     cerr<<"The change in cost is "<<change_in_cost<<endl;
@@ -111,12 +102,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     {
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
-        if(routing_table.cost[neighbor_node] == -1)
-        {
-            cout<<"ZEBRA ZEBRA ZEBRA"<<endl;
-            continue;
-        }
-
         // Look at the distance vectors from this node to every other node in the graph
         map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
 
@@ -124,7 +109,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
         double cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
 
-        cerr<<routing_table.cost[neighbor_node]<< " + " << node_vector[link_dest].cost << " = " << cost_to_dest_through_node << endl;
+        cerr<< "NENODE: " << neighbor_node << "~~~~~~~~"<< routing_table.cost[neighbor_node]<< " + " << node_vector[link_dest].cost << " = " << cost_to_dest_through_node << endl;
 
 
 
@@ -134,15 +119,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
 
         // Compare the cost that we have at current to this node with the distance our neighbor is advertising
-        if(cost_to_dest_through_node < cost_in_table_at_current)
+        if(cost_to_dest_through_node < cost_in_table_at_current && cost_to_dest_through_node != -1)
         {
-
-            if(routing_table.cost[link_dest] == -1) cerr<< "EEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
-            // Change your cost and hop table.
             routing_table.cost[link_dest] = cost_to_dest_through_node;
-
-            if(routing_table.cost[link_dest] == -1) cerr<< "FFFFFFFFFFFFFFFFFFFFFFFFF"<<endl;
-
             routing_table.hop[link_dest] = neighbor_node;
         }
     }
