@@ -35,6 +35,9 @@ DistanceVector::~DistanceVector()
  */
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
+    cerr<<endl<<endl;
+    cerr<<"***********************************************"<<endl;
+    cerr<<"***********************************************"<<endl;
     cerr << endl << "LINK UPDATE: " << *l << endl << endl;
 
     // Get the information from the link that has changed.
@@ -58,8 +61,12 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
     // Record the old cost that we've recorded about this link.
     double old_cost = routing_table.cost[link_dest];
+
+    if(routing_table.cost[link_dest] == -1) cerr<< "AAAAAAAAAAAAAAAAAAAA"<<endl;
+
     double change_in_cost = link_cost - old_cost;
 
+    cerr<<"The change in cost is "<<change_in_cost<<endl;
 
     // We should look through our hop table. When we find an entry where the
     // hop uses the node which is the DESTINATION of the passed in link, we
@@ -91,6 +98,8 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         }
     }
 
+    if(routing_table.cost[link_dest] == -1) cerr<< "BBBBBBBBBBBBBBBBBBBB"<<endl;
+
     // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
     // the link change could have drastically increased the cost of our link. We'll now look through all our
     // neighbors and see who has the smallest path to offer us.
@@ -114,22 +123,41 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
         double cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
+
+        cerr<<routing_table.cost[neighbor_node]<< " + " << node_vector[link_dest].cost << " = " << cost_to_dest_through_node << endl;
+
+
+
         double cost_in_table_at_current = routing_table.cost[link_dest];
+
+        if(routing_table.cost[link_dest] == -1) cerr<< "DDDDDDDDDDDDDDDDDDDDDDDDD"<<endl;
+
 
         // Compare the cost that we have at current to this node with the distance our neighbor is advertising
         if(cost_to_dest_through_node < cost_in_table_at_current)
         {
+
+            if(routing_table.cost[link_dest] == -1) cerr<< "EEEEEEEEEEEEEEEEEEEEEEEEE"<<endl;
             // Change your cost and hop table.
             routing_table.cost[link_dest] = cost_to_dest_through_node;
+
+            if(routing_table.cost[link_dest] == -1) cerr<< "FFFFFFFFFFFFFFFFFFFFFFFFF"<<endl;
+
             routing_table.hop[link_dest] = neighbor_node;
         }
     }
+
+
 
     // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
     // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
     // that they can adjust their costs accordingly.
 
     cerr<<endl<<*this<<endl;
+
+    cerr<<"***********************************************"<<endl;
+    cerr<<"***********************************************"<<endl;
+    cerr<<endl<<endl;
 
     SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
 }
@@ -146,9 +174,8 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
     cerr << endl << endl;
     cerr << "***********************************************"<<endl;
     cerr << "***********************************************"<<endl;
-    cerr << "ROUTING MESSAGE:" << *m << endl << *this << endl << endl;
-    cerr << "***********************************************"<<endl;
-    cerr << "***********************************************"<<endl;
+    cerr << "ROUTING MESSAGE:" << *m << endl << endl;
+
     cerr << endl << endl;
 
     // Your neighbor changed their table and has something to tell you. We'll
@@ -188,6 +215,11 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
             weMadeAChange = true;
         }
     }
+
+    cerr << *this << endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************"<<endl;
+
 
     if(weMadeAChange)
     {

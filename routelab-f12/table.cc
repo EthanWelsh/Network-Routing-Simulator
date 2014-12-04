@@ -70,7 +70,6 @@ Table &Table::operator=(const Table &rhs)
  */
 void Table::updateTable(unsigned int dest, unsigned int next, double latency)
 {
-    //if(cost.at(dest) < latency) cout<<"Hm..... This ain't looking good"<<endl;
     cost[dest] = latency;
     hop[dest] = next;
 }
@@ -90,7 +89,7 @@ int Table::getNextHop(unsigned dest)
 
 ostream & Table::Print(ostream &os) const
 {
-    os << "*****DistanceVector Table()*****" << endl;
+    os << endl << "*****DistanceVector Table()*****" << endl;
 
     os << "|======================|" << endl;
     os << "|         COST         |" << endl;
