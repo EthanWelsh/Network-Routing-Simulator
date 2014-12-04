@@ -82,7 +82,7 @@ int Table::getNextHop(unsigned dest)
     if(hop.find(dest) == hop.end())
     {
         cerr<<"No entry found in the hop map. Could not determine next hop. Returning -1." << endl;
-        return -1;
+        return -2;
     }
     else
     {
@@ -103,7 +103,7 @@ ostream & Table::Print(ostream &os) const
         unsigned int dest = it->first;
         unsigned int cost_to = it->second;
         if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
-        else os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+        else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
     }
     os << "|======================|"<<endl;
 

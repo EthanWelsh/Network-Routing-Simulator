@@ -44,6 +44,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
 
 
+    // If you got an update on an edge that you haven't seen before.
+    if(routing_table.cost.find(link_dest) == routing_table.cost.end())
+    {
+        routing_table.cost[link_dest] = link_cost;
+        return;
+    }
+
     // Record the old cost that we've recorded about this link.
     double old_cost = routing_table.cost[link_dest];
     double change_in_cost = link_cost - old_cost;
@@ -148,12 +155,12 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
 
         if(routing_table.cost.find(destination_node) == routing_table.cost.end())
         { // If we don't yet have a path to this node.
-            routing_table.updateTable(destination_node, step_node, reported_cost);
+            routing_table.updateTable(destination_node, step_node, total_cost);
             weMadeAChange = true;
         }
         else if(total_cost < routing_table.cost[destination_node])
         { // If we found a path that's better than the one we have already
-            routing_table.updateTable(destination_node, step_node, reported_cost);
+            routing_table.updateTable(destination_node, step_node, total_cost);
             weMadeAChange = true;
         }
     }
@@ -178,8 +185,8 @@ int DistanceVector::costToNeighbor(int neighborNum)
             return myNeighbors->at(i)->GetLatency();
         }
     }
-    cerr<<"Error! You asked for the cost to "<<neighborNum<<" but I can't find it."<<endl;
-    return -1;
+    cout<<"Error! You asked for the cost to "<<neighborNum<<" but I can't find it."<<endl;
+    return -5;
 }
 
 

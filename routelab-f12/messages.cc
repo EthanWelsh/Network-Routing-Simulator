@@ -21,7 +21,7 @@ RoutingMessage::RoutingMessage(Table &t, unsigned int src) // Initialize with sr
 
 ostream &RoutingMessage::Print(ostream &os) const
 {
-  os << "RoutingMessage()";
+  os << "RoutingMessage("<<src_node<<")";
   return os;
 }
 
