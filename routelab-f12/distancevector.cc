@@ -85,19 +85,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 			}
             else
 			{
-				cerr<< "Adding the cost change " << change_in_cost << endl;
+				cerr<< "Adding the cost change " << change_in_cost << " + " << routing_table.cost[table_dest] << endl;
 				routing_table.cost[table_dest] += change_in_cost;
-			}
+                cerr<< "Now equals " << routing_table.cost[table_dest] << endl;
 
-            // At this point our map reflects the changes in cost that have been caused by the connection
-            // change. We now need to update topo to reflect the new change there as well
-            map<int, TopoLink> &col = routing_table.distance_vectors[link_src];
-            TopoLink &toChange = col[table_dest];
-            toChange.cost += link_cost;
+			}
         }
     }
-
-    if(routing_table.cost[link_dest] == -1) cerr<< "BBBBBBBBBBBBBBBBBBBB"<<endl;
 
     // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
     // the link change could have drastically increased the cost of our link. We'll now look through all our
@@ -115,7 +109,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
-        double cost_to_dest_through_node = routing_table.cost[neighbor_node] + node_vector[link_dest].cost;
+        double cost_to_dest_through_node = routing_table.cost[neighbor_node] + change_in_cost;
 
         cerr<< "NENODE: " << neighbor_node << "~~~~~~~~"<< routing_table.cost[neighbor_node]<< " + " << node_vector[link_dest].cost << " = " << cost_to_dest_through_node << endl;
 
