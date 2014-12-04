@@ -23,9 +23,6 @@ DistanceVector::~DistanceVector()
 
 
 /** Write the following functions.  They currently have dummy implementations **/
-
-
-
 /*
  Is called to inform you that an outgoing link connected to your node has just
  changed its properties. A pointer to a copy of the new Link is sent to you so
@@ -35,9 +32,6 @@ DistanceVector::~DistanceVector()
  */
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
-    cerr<<endl<<endl;
-    cerr<<"***********************************************"<<endl;
-    cerr<<"***********************************************"<<endl;
     cerr << endl << "LINK UPDATE: " << *l << endl << endl;
 
     // Get the information from the link that has changed.
@@ -57,8 +51,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     double old_cost = routing_table.cost[link_dest];
     double change_in_cost = link_cost - old_cost;
 
-    cerr<<"The change in cost is "<<change_in_cost<<endl;
-
     // We should look through our hop table. When we find an entry where the
     // hop uses the node which is the DESTINATION of the passed in link, we
     // should change our table accordingly.
@@ -77,18 +69,13 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         if(table_neighbor == link_dest)
         {   // We have found a path to another node that uses the node which is the destination in the
             // changed connection. We now need to adjust our cost for this path accordingly.
-
             if(routing_table.cost[table_dest] == -1) 
 			{
 				routing_table.cost[table_dest] = link_cost;
-				cerr<< "Changing a cost to " << link_cost << endl;
 			}
             else
 			{
-				cerr<< "Adding the cost change " << change_in_cost << " + " << routing_table.cost[table_dest] << endl;
 				routing_table.cost[table_dest] += change_in_cost;
-                cerr<< "Now equals " << routing_table.cost[table_dest] << endl;
-
 			}
         }
     }
@@ -110,15 +97,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
         double cost_to_dest_through_node = routing_table.cost[neighbor_node] + change_in_cost;
-
-        cerr<< "NENODE: " << neighbor_node << "~~~~~~~~"<< routing_table.cost[neighbor_node]<< " + " << node_vector[link_dest].cost << " = " << cost_to_dest_through_node << endl;
-
-
-
         double cost_in_table_at_current = routing_table.cost[link_dest];
-
-        if(routing_table.cost[link_dest] == -1) cerr<< "DDDDDDDDDDDDDDDDDDDDDDDDD"<<endl;
-
 
         // Compare the cost that we have at current to this node with the distance our neighbor is advertising
         if(cost_to_dest_through_node < cost_in_table_at_current && cost_to_dest_through_node != -1)
@@ -127,8 +106,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
             routing_table.hop[link_dest] = neighbor_node;
         }
     }
-
-
 
     // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
     // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
@@ -142,7 +119,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
     SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
 }
-
 
 /*
  called when a routing message arrives at a node. In response, you may send
