@@ -35,7 +35,7 @@ DistanceVector::~DistanceVector()
  */
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
-    cerr << *l << *this << ": Link Update: " << endl << endl;
+    cerr << endl << "LINK UPDATE: " << *l << endl << endl;
 
     // Get the information from the link that has changed.
     int link_src = l->GetSrc();
@@ -46,6 +46,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     if(routing_table.cost.find(link_dest) == routing_table.cost.end())
     {
         routing_table.cost[link_dest] = link_cost;
+        routing_table.updateTable(link_dest, link_dest, link_cost);
+        cerr<<endl<<*this<<endl;
+
         return;
     }
 
@@ -95,6 +98,12 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     {
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
+        if(routing_table.cost[neighbor_node] == -1)
+        {
+            cout<<"ZEBRA ZEBRA ZEBRA"<<endl;
+            continue;
+        }
+
         // Look at the distance vectors from this node to every other node in the graph
         map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
 
@@ -115,6 +124,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
     // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
     // that they can adjust their costs accordingly.
+
+    cerr<<endl<<*this<<endl;
+
     SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
 }
 
@@ -130,7 +142,7 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
     cerr << endl << endl;
     cerr << "***********************************************"<<endl;
     cerr << "***********************************************"<<endl;
-    cerr << "distancevector:" << endl << *this << endl <<" got a routing message: " << endl << *m << endl;
+    cerr << "ROUTING MESSAGE:" << *m << endl << *this << endl << endl;
     cerr << "***********************************************"<<endl;
     cerr << "***********************************************"<<endl;
     cerr << endl << endl;
