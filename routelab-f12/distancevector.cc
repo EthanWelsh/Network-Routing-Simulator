@@ -69,14 +69,7 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         if(table_neighbor == link_dest)
         {   // We have found a path to another node that uses the node which is the destination in the
             // changed connection. We now need to adjust our cost for this path accordingly.
-            if(routing_table.cost[table_dest] == -1) 
-			{
-				routing_table.cost[table_dest] = link_cost;
-			}
-            else
-			{
-				routing_table.cost[table_dest] += change_in_cost;
-			}
+        	routing_table.cost[table_dest] += change_in_cost;
         }
     }
 
