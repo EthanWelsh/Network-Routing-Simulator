@@ -78,8 +78,16 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         {   // We have found a path to another node that uses the node which is the destination in the
             // changed connection. We now need to adjust our cost for this path accordingly.
 
-            if(routing_table.cost[table_dest] == -1) routing_table.cost[table_dest] = link_cost;
-            else routing_table.cost[table_dest] += change_in_cost;
+            if(routing_table.cost[table_dest] == -1) 
+			{
+				routing_table.cost[table_dest] = link_cost;
+				cerr<< "Changing a cost to " << link_cost << endl;
+			}
+            else
+			{
+				cerr<< "Adding the cost change " << change_in_cost << endl;
+				routing_table.cost[table_dest] += change_in_cost;
+			}
 
             // At this point our map reflects the changes in cost that have been caused by the connection
             // change. We now need to update topo to reflect the new change there as well
