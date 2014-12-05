@@ -35,6 +35,7 @@ public:
 
     priority_queue<int> pq;
 
+    void findImprove();
 };
 
 inline ostream &operator<<(ostream &os, const LinkState &n)

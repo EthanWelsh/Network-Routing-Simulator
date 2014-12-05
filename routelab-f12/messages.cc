@@ -38,3 +38,21 @@ unsigned int RoutingMessage::getSrc()
     return src_node;
 }
 #endif
+
+//#if defined(LINKSTATE)
+
+RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src) // Initialize with src, dest, and latency
+{
+    cost = ccc;
+    src_node = src;
+}
+
+RoutingMessage::getNeighborTable()
+{
+    return neighbor_table;
+}
+
+
+
+
+//#endif

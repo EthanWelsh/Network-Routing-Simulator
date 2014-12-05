@@ -24,6 +24,7 @@ public:
 
 
 #if defined(DISTANCEVECTOR)
+    RoutingMessage(map<int, double> ccc, unsigned int src);
     map<int, double> getDistanceVector();
     unsigned int getSrc();
 
