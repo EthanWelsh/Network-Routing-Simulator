@@ -30,7 +30,7 @@ Table &Table::operator=(const Table &rhs)
 
 #endif
 
-//#if defined(LINKSTATE)
+#if defined(LINKSTATE)
 
 
 
@@ -42,7 +42,7 @@ Table &Table::operator=(const Table &rhs)
     }
 
 
-//#endif
+#endif
 
 
 
