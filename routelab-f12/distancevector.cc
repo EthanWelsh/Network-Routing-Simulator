@@ -263,7 +263,13 @@ void DistanceVector::TimeOut()
  */
 Node *DistanceVector::GetNextHop(Node *destination)
 {
-    return NULL;
+    int dest = destination->GetNumber();
+    int next = routing_table.hop[dest];
+
+    Node *n = new Node();
+    n->SetNumber(next);
+
+    return n;
 }
 
 
