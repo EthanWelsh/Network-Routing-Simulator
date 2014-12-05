@@ -88,12 +88,8 @@ Table &Table::operator=(const Table &rhs)
         }
         os << "|======================|"<<endl << endl;
 
-
         os << endl;
         os << endl;
-
-
-
 
         os << "\t\t|======================|"<<endl;
         os << "\t\t|======================|"<<endl;
