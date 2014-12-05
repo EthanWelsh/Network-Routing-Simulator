@@ -2,35 +2,13 @@
 #include "table.h"
 #include "messages.h"
 
-Table::Table()
-{
-    topo.clear();
-}
 
-Table::Table(const Table &rhs)
-{
-    *this = rhs;
-}
 
 /*
  This constructor will be used by our implementation of DV. It will start by adding ourselves to the forwarding table,
  along with the corresponding weights to each node. In addition to this, we'll fill out our hop table appropriately. In
  order to run this, you'll pass in this.getOutGoingConnections() from the node that you're trying to make this table for.
  */
-Table::Table(deque<Link *> *links)
-{
-
-    cost[links->front()->GetSrc()] = 0;
-
-    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i) // TODO why ++i instead of i++???
-    {
-        unsigned int dest = (*i)->GetDest();
-        double latency = (*i)->GetLatency();
-
-        updateTable(dest, dest, latency);
-    }
-    delete links;
-}
 
 Table &Table::operator=(const Table &rhs)
 {
@@ -41,6 +19,17 @@ Table &Table::operator=(const Table &rhs)
 
 #if defined(GENERIC)
 
+
+Table::Table(const Table &rhs)
+{
+    *this = rhs;
+}
+
+
+Table::Table()
+{
+    topo.clear();
+}
 #endif
 
 #if defined(LINKSTATE)
@@ -50,18 +39,12 @@ Table &Table::operator=(const Table &rhs)
 		hopMap.clear();
 		change_the_hop_map= true;
 	}
-	
-	int Table::UpdateLink(const Link *link)
-	{
-		int src = link->GetSrc();
-		int dest = link->GetDest();
-		int latency = link->GetLatency();
-		int age= ++table[src][dest].age;
 
-		table[src][dest].age = age;
-		table[source][dest].cost = latency;
-		return age;
-	}
+
+    Table::Table(const Table &rhs)
+    {
+        *this = rhs;
+    }
 
     ostream & Table::Print(ostream &os) const
     {
@@ -70,12 +53,24 @@ Table &Table::operator=(const Table &rhs)
     }
 #endif
 
-//#if defined(DISTANCEVECTOR)
+#if defined(DISTANCEVECTOR)
 
 /*
  Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
  what our nextHop is in order to get the shortest cost path.
  */
+
+
+Table::Table()
+{
+    topo.clear();
+}
+
+Table::Table(const Table &rhs)
+{
+    *this = rhs;
+}
+
 void Table::updateTable(unsigned int dest, unsigned int next, double latency)
 {
     cost[dest] = latency;
@@ -171,4 +166,4 @@ ostream & Table::Print(ostream &os) const
     return os;
 }
 
-//#endif
+#endif

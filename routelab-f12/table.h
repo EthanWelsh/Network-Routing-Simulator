@@ -64,13 +64,10 @@ class Table
 
         #if defined(DISTANCEVECTOR)
 
-        //void Table::updateTable(unsigned int, unsigned int, int);
-
-
-
+            void updateTable(unsigned int dest, unsigned int next, double latency);
         #endif
 
-    void updateTable(unsigned int dest, unsigned int next, double latency);
+
 
 };
 

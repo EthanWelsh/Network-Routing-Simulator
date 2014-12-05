@@ -39,14 +39,8 @@ unsigned int RoutingMessage::getSrc()
 RoutingMessage::RoutingMessage(int a, int src, int dest, int lat)
 {
     link_age = a;
-    src= src;
+    src = src;
     dest = dest;
     latency = lat;
-}
-
-ostream &RoutingMessage::Print(ostream &os) const
-{
-    os << "LinkState RoutingMessage()";
-    return os;
 }
 #endif

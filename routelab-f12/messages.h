@@ -10,6 +10,7 @@ struct RoutingMessage {
     RoutingMessage();
     RoutingMessage(const RoutingMessage &rhs);
     RoutingMessage(map<int, double> ccc, unsigned int src);
+    RoutingMessage(int a, int src, int dest, int lat);
 
 
 public:
@@ -23,6 +24,16 @@ public:
 
     ostream & Print(ostream &os) const;
 
+    //#ifdef(LINKSTATE)
+
+
+    int dest;
+    int src;
+	int age;
+    int latency;
+    int link_age;
+
+    //#endif
 
 
 };

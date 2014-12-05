@@ -55,7 +55,7 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
         // If not add it to the table
         routing_table.topo[src][dest].age = age;
         routing_table.topo[src][dest].cost = latency;
-        routing_table.hopMapNeedsChanging = true; // TODO in table --- change made to the map
+        routing_table.change_the_hop_map = true; // TODO in table --- change made to the map
         SendToNeighbors(m);
     }
 	// In the list so just update the age
@@ -64,7 +64,7 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
         // We have seen this combination before we now just update the age
         routing_table.topo[src][dest].age = age;
         routing_table.topo[src][dest].cost = lat;
-        routing_table.hopMapNeedsChanging = true; // TODO in table --- change made to the map
+        routing_table.change_the_hop_map = true; // TODO in table --- change made to the map
         SendToNeighbors(m);
     }
 }
@@ -77,7 +77,7 @@ void LinkState::TimeOut()
 Node* LinkState::GetNextHop(Node *destination)
 { 
     // Run Djikstra on the map to make its up to date
-	if (routing_table.hopMapNeedsChanging)
+	if (routing_table.change_the_hop_map)
 	{
 		map<int, int> distances;
         set<int> visited;
@@ -96,20 +96,24 @@ Node* LinkState::GetNextHop(Node *destination)
             distances[i] = INT_MAX;
             previous[i] = -1;
         }
-		distances[number] = 0;
-        queue.insert(number); //Inserts itself into the queue
-		
-		while(!queue.empty())
+		distances[GetNumber()] = 0;
+        queue.insert(GetNumber()); //Inserts itself into the queue
+
+        int smallest_node;
+        int minimum;
+
+        while(!queue.empty())
 		{
-			int minimum= INT_MAX;
-			int smallest_node= -1;
+			minimum = INT_MAX;
+            smallest_node = -1;
+
 			for(int i=0; i< size_of_topo; i++)
 			{
 				if(queue.count(i) > 0)
 				{  
                     if(visited.count(i) < 1)
                     {
-                        if(dist[i] < min)
+                        if(distances[i] < minimum)
                         {
                             minimum = distances[i];
                             smallest_node = i;
@@ -124,7 +128,7 @@ Node* LinkState::GetNextHop(Node *destination)
 		visited.insert(smallest_node);
 		
 		// Find the inserted nodes values
-		neighbors= topo[smallest];
+		neighbors= topo[smallest_node];
 		for(itr= neighbors.begin(); itr!= neighbors.end(); itr++)
 		{
 			if( visited.count(itr->first)< 1 ) 
@@ -155,7 +159,7 @@ Node* LinkState::GetNextHop(Node *destination)
 			unsigned int before = prev_itr->second;
             int current = prev_itr->first;
             int current2 = prev_itr->first;
-            while(before != number)
+            while(before != GetNumber())
 			{
                 current = before;
                 before = previous[before];
@@ -163,15 +167,15 @@ Node* LinkState::GetNextHop(Node *destination)
             temp_hop_map[current2]= current;
         }
 		
-		Node *temp_node = new Node(temp_hop_map[destination->number], NULL, 0, 0);
-        Node * real_node = context->FindMatchingNode(const_cast<Node *>(a));
+		Node *temp_node = new Node(temp_hop_map[destination->GetNumber()], NULL, 0, 0);
+        Node * real_node = context->FindMatchingNode(const_cast<Node *>(temp_node));
         routing_table.hopMap = temp_hop_map;
-        routing_table.hopMapNeedsChanging = false;	// TODO adjust this name
+        routing_table.change_the_hop_map = false;
         return real_node;
 	}
 	else
 	{   
-		Node *temp_node = new Node(routing_table.hopMap[dest->number], NULL, 0, 0);
+		Node *temp_node = new Node(routing_table.hopMap[destination->GetNumber()], NULL, 0, 0);
         Node * real_node = context->FindMatchingNode(const_cast<Node *>(temp_node));
         return real_node;        
     } 
@@ -182,7 +186,7 @@ Table* LinkState::GetRoutingTable()
 {
     // This returns a copy of the routing table
 	Table *copy= new Table(routing_table);
-	return temp;
+	return copy;
 }
 
 ostream & LinkState::Print(ostream &os) const
