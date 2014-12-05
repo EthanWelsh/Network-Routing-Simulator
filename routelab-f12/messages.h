@@ -9,15 +9,20 @@
 struct RoutingMessage {
     RoutingMessage();
     RoutingMessage(const RoutingMessage &rhs);
-    RoutingMessage(map<int, double> ccc, unsigned int src);
 
+#if defined(DISTANCEVECTOR)
+    RoutingMessage(map<int, double> ccc, unsigned int src);
+#endif
 
 public:
+#if defined(DISTANCEVECTOR)
     map<int, double> getDistanceVector();
     unsigned int getSrc();
 
     map<int, double> cost;
     unsigned int src_node;
+
+#endif
 
     RoutingMessage &operator=(const RoutingMessage &rhs);
 
