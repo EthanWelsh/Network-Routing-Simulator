@@ -29,12 +29,10 @@ Table::Table(deque<Link *> *links)
     delete links;
 }
 
-
 Table &Table::operator=(const Table &rhs)
 {
     /* For now,  Change if you add more data members to the class */
     topo = rhs.topo;
-
     return *this;
 }
 
@@ -43,7 +41,14 @@ Table &Table::operator=(const Table &rhs)
 #endif
 
 #if defined(LINKSTATE)
-	/*int Table::UpdateLink(const Link *link)
+	Table::Table()
+	{
+		topo.clear();
+		hopMap.clear();
+		change_the_hop_map= true;
+	}
+	
+	int Table::UpdateLink(const Link *link)
 	{
 		int src = link->GetSrc();
 		int dest = link->GetDest();
@@ -59,7 +64,7 @@ Table &Table::operator=(const Table &rhs)
     {
       os << "LinkState Table()";
       return os;
-    }*/
+    }
 #endif
 
 //#if defined(DISTANCEVECTOR)
