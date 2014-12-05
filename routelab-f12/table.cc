@@ -19,6 +19,9 @@ Table::Table(const Table &rhs)
  */
 Table::Table(deque<Link *> *links)
 {
+
+    cost[links->front()->GetSrc()] = 0;
+
     for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i) // TODO why ++i instead of i++???
     {
         unsigned int dest = (*i)->GetDest();
@@ -79,7 +82,7 @@ int Table::getNextHop(unsigned dest)
     if(hop.find(dest) == hop.end())
     {
         cerr<<"No entry found in the hop map. Could not determine next hop. Returning -1." << endl;
-        return -2;
+        return -1;
     }
     else
     {

@@ -76,7 +76,7 @@ bool DistanceVector::findImprove()
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
 
-    routing_table.cost[l->GetSrc()] = 0;
+    //routing_table.cost[l->GetSrc()] = 0; TODO
 
     cerr<<endl<<endl;
     cerr<<"***********************************************"<<endl;
