@@ -2,8 +2,6 @@
 #include "table.h"
 #include "messages.h"
 
-#include <stdlib.h>
-
 Table::Table()
 {
     topo.clear();
@@ -24,7 +22,7 @@ Table::Table(deque<Link *> *links)
 
     cost[links->front()->GetSrc()] = 0;
 
-    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i) // TODO why ++i instead of i++???
+    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i)
     {
         unsigned int dest = (*i)->GetDest();
         double latency = (*i)->GetLatency();
@@ -79,18 +77,6 @@ void Table::updateTable(unsigned int dest, unsigned int next, double latency)
     hop[dest] = next;
 }
 
-int Table::getNextHop(unsigned dest)
-{
-    if(hop.find(dest) == hop.end())
-    {
-        cerr<<"No entry found in the hop map. Could not determine next hop. Returning -1." << endl;
-        return -1;
-    }
-    else
-    {
-        return hop[dest];
-    }
-}
 
 ostream & Table::Print(ostream &os) const
 {
@@ -103,7 +89,7 @@ ostream & Table::Print(ostream &os) const
     for (it = cost.begin(); it != cost.end(); ++it)
     {
         int dest = it->first;
-        int cost_to = it->second;
+        int cost_to = (int) it->second;
         if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
         else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
     }
@@ -154,17 +140,12 @@ ostream & Table::Print(ostream &os) const
         for(it3 = costNeh.begin(); it3 != costNeh.end(); ++it3)
         {
             int dest = it3->first;
-            int cost_to = it3->second;
+            int cost_to = (int) it3->second;
             if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
             else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
         }
         os << "|======================|"<<endl << endl;
     }
-
-
-
-
-
     return os;
 }
 

@@ -57,7 +57,6 @@ class Table
         Table(deque<Link *> *links);
 
         Table &operator=(const Table &);
-        int getNextHop(unsigned);
 
         ostream &Print(ostream &os) const;
 
