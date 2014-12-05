@@ -121,6 +121,45 @@ ostream & Table::Print(ostream &os) const
     }
     os << "|======================|"<<endl << endl;
 
+
+    os << endl;
+    os << endl;
+
+    os << "|======================|"<<endl;
+    os << "|======================|"<<endl;
+    os << "||          DV        ||"<<endl;
+    os << "|======================|"<<endl;
+    os << "|======================|"<<endl;
+
+
+    map<int, map <int, double> >::const_iterator it2;
+    for(it2 = distance_vectors.begin(); it2 != distance_vectors.end(); ++it2)
+    {
+        int myNeh = it2->first;
+
+        os << endl;
+        os << "|======================|"<<endl;
+        os << "|          "<<myNeh<<"           |"<<endl;
+        os << "|======================|"<<endl;
+
+
+        map<int, double> costNeh = it2->second;
+
+        map<int, double>::const_iterator it3;
+        for(it3 = costNeh.begin(); it3 != costNeh.end(); ++it3)
+        {
+            int dest = it3->first;
+            int cost_to = it3->second;
+            if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+            else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
+        }
+        os << "|======================|"<<endl << endl;
+    }
+
+
+
+
+
     return os;
 }
 

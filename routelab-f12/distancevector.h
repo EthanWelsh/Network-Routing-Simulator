@@ -20,12 +20,12 @@ class DistanceVector: public Node {
         Node* GetNextHop(Node* destination);
         Table* getRoutingTable();
         int costToNeighbor(int neighborNum);
-        void findImprove();
+        bool findImprove();
 
     ostream & Print(ostream & os) const;
 
         // Anything else
-    void findImprove();
+
 };
 
 inline ostream & operator<<(ostream & os, const DistanceVector & n) {
