@@ -87,19 +87,22 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
         // Look at the distance vectors from this node to every other node in the graph
-        map<int, TopoLink> node_vector = routing_table.distance_vectors[neighbor_node];
+        map<int, double> node_vector = routing_table.distance_vectors[neighbor_node];
 
         // Look at every entry in their distance vector table and see if any of their paths are improvements
 
 
-        std::map<int, TopoLink>::iterator iter;
+        std::map<int, double>::iterator iter;
 
         for(iter = node_vector.begin(); iter != node_vector.end(); iter++)
         {
+
+            cout<<"A"<<endl;
+
             int dest_node = iter->first;
 
             double cost_to_neighbor = routing_table.cost[neighbor_node];
-            double cost_from_neighbor_to_dest = node_vector[dest_node].cost;
+            double cost_from_neighbor_to_dest = node_vector[dest_node];
             double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
 
             double cost_in_table_at_current = routing_table.cost[dest_node];
@@ -110,7 +113,11 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
                 // Compare the cost that we have at current to this node with the distance our neighbor is advertising
                 if(new_total_cost < cost_in_table_at_current)
                 {
+                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
+                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
                     routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
+                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
+                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
                 }
             }
         }

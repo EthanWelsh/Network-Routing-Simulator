@@ -44,7 +44,7 @@ class Table
 
     public:
 
-		map<int, map< int, TopoLink > > distance_vectors;
+		map<int, map< int, double > > distance_vectors;
         map<int, map< int, TopoLink > > topo;
         map<int, double> cost;
         map<int, int> hop;
