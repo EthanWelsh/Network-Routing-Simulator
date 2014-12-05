@@ -2,6 +2,8 @@
 #include "table.h"
 #include "messages.h"
 
+#include <stdlib.h>
+
 Table::Table()
 {
     topo.clear();
@@ -142,7 +144,7 @@ ostream & Table::Print(ostream &os) const
 
         os << endl;
         os << "|======================|"<<endl;
-        os << "|          "<<myNeh<<"           |"<<endl;
+        os << "|           "<<myNeh<<"          |"<<endl;
         os << "|======================|"<<endl;
 
 

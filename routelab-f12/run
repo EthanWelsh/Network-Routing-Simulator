@@ -1,0 +1,3 @@
+cd routeProject
+rm *.o
+./routesim demo.topo demo.event
