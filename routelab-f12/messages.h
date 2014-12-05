@@ -16,12 +16,13 @@ public:
 
 //#if defined(LINKSTATE)
 
-    RoutingMessage(map<int, double> ccc, unsigned int src);
+    RoutingMessage(map<int, double> ccc, unsigned int src, int s);
 
     map<int, double> neighbor_table;
     unsigned int src_node;
 
     map<int, double> getNeighborTable();
+    int seq;
 
 //#endif
 

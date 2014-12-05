@@ -18,7 +18,10 @@ RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src) // Initia
 {
     cost = ccc;
     src_node = src;
+    seq = s;
 }
+
+
 #endif
 
 ostream &RoutingMessage::Print(ostream &os) const
@@ -41,7 +44,7 @@ unsigned int RoutingMessage::getSrc()
 
 //#if defined(LINKSTATE)
 
-RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src) // Initialize with src, dest, and latency
+RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src, int s) // Initialize with src, dest, and latency
 {
     neighbor_table = ccc;
     src_node = src;

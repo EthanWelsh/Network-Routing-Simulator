@@ -31,12 +31,17 @@ public:
 
     ostream &Print(ostream &os) const;
 
+    void findImprove();
+    void Flood(RoutingMessage *m);
     // Anything else
 
     priority_queue<int> pq;
+    map<int, int> message_seqs;
+    int seq;
 
 
-    void findImprove();
+
+
 };
 
 inline ostream &operator<<(ostream &os, const LinkState &n)

@@ -3,12 +3,14 @@
 LinkState::LinkState(unsigned n, SimulationContext *c, double b, double l) :
         Node(n, c, b, l)
 {
+    seq = 0;
 }
 
 LinkState::LinkState(const LinkState &rhs) :
         Node(rhs)
 {
     *this = rhs;
+    seq = 0;
 }
 
 LinkState &LinkState::operator=(const LinkState &rhs)
@@ -19,6 +21,7 @@ LinkState &LinkState::operator=(const LinkState &rhs)
 
 LinkState::~LinkState()
 {
+
 }
 
 /** Write the following functions.  They currently have dummy implementations **/
@@ -35,8 +38,6 @@ void LinkState::LinkHasBeenUpdated(Link *l)
 
     int link_dest = l->GetDest();
     int link_cost = l->GetLatency();
-
-
 
     // If this is the first time we've seen this node...
     if(routing_table.neighbor_table.find(link_dest) == routing_table.neighbor_table.end())
@@ -97,26 +98,44 @@ void LinkState::LinkHasBeenUpdated(Link *l)
     cerr<<"***********************************************"<<endl;
     cerr<<endl<<endl;
 
-    SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber()));
+    SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber(), seq));
 }
 
 void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
     cerr << endl << endl;
-    cerr << "***********************************************"<<endl;
-    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************" << endl;
+    cerr << "***********************************************" << endl;
     cerr << "ROUTING MESSAGE:" << *m << endl << endl;
 
-    routing_table.topology[m->src_node] = m->neighbor_table;
-
-    findImprove();
+    if(message_seqs.find(m->src_node) == message_seqs.end())
+    {
+        routing_table.topology[m->src_node] = m->neighbor_table;
+        Flood(m);
+        message_seqs[m->src_node] = m->seq;
+    }
+    else
+    {
+        if (message_seqs[m->src_node] < m->seq )
+        {
+            routing_table.topology[m->src_node] = m->neighbor_table;
+            Flood(m);
+            message_seqs[m->src_node] = m->seq;
+        }
+    }
 
     cerr << *this << endl;
-    cerr << "***********************************************"<<endl;
-    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************" << endl;
+    cerr << "***********************************************" << endl;
+
+}
 
 
-
+void LinkState::Flood(RoutingMessage *m)
+{
+    seq = m->seq;
+    findImprove();
+    SendToNeighbors(m);
 }
 
 void LinkState::findImprove()
@@ -148,5 +167,3 @@ ostream &LinkState::Print(ostream &os) const
     Node::Print(os);
     return os;
 }
-
-
