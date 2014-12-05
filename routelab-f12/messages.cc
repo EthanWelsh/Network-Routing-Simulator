@@ -43,11 +43,11 @@ unsigned int RoutingMessage::getSrc()
 
 RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src) // Initialize with src, dest, and latency
 {
-    cost = ccc;
+    neighbor_table = ccc;
     src_node = src;
 }
 
-RoutingMessage::getNeighborTable()
+map<int, double> RoutingMessage::getNeighborTable()
 {
     return neighbor_table;
 }

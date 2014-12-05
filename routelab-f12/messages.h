@@ -14,11 +14,14 @@ struct RoutingMessage {
 
 public:
 
-//#if defined(DISTANCEVECTOR)
+//#if defined(LINKSTATE)
 
     RoutingMessage(map<int, double> ccc, unsigned int src);
+
     map<int, double> neighbor_table;
     unsigned int src_node;
+
+    map<int, double> getNeighborTable();
 
 //#endif
 

@@ -36,19 +36,22 @@ void LinkState::LinkHasBeenUpdated(Link *l)
     int link_dest = l->GetDest();
     int link_cost = l->GetLatency();
 
-    routing_table.neighbor_table[link_dest] = link_cost;
+
 
     // If this is the first time we've seen this node...
     if(routing_table.neighbor_table.find(link_dest) == routing_table.neighbor_table.end())
     {
-
+        routing_table.neighbor_table[link_dest] = link_cost;
         routing_table.hop[link_dest] = link_dest;
         routing_table.cost[link_dest] = link_cost;
     }
     else
     {
-        double old_cost = routing_table.cost[link_dest];
+
+        double old_cost = routing_table.neighbor_table[link_dest];
         double change_in_cost = link_cost - old_cost;
+
+        routing_table.neighbor_table[link_dest] = link_cost;
 
         cerr<<"You've already got "<<link_dest<<" down in your table with a cost of "<<old_cost<<endl;
         cerr<<"We're changing the link to " << link_cost<<" which is a change of "<<change_in_cost<<" from the original."<<endl;
