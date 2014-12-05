@@ -87,11 +87,14 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
 
         // Look at the distance vectors from this node to every other node in the graph
-        map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
+        map<int, TopoLink> node_vector = routing_table.distance_vectors[neighbor_node];
 
         // Look at every entry in their distance vector table and see if any of their paths are improvements
-        typedef std::map<int, TopoLink>::iterator iter;
-        for(it_type iter = node_vector.begin(); iter != node_vector.end(); iter++)
+
+
+        std::map<int, TopoLink>::iterator iter;
+
+        for(iter = node_vector.begin(); iter != node_vector.end(); iter++)
         {
             int dest_node = iter->first;
 
