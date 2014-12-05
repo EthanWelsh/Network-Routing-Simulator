@@ -53,14 +53,18 @@ bool DistanceVector::findImprove()
             double cost_from_neighbor_to_dest = iter->second;
             double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
 
-            double cost_in_table_at_current = routing_table.cost[dest_node];
 
             bool isNewLink = false;
 
             if(routing_table.cost.find(dest_node) == routing_table.cost.end())
             {
+                cerr<<"We haven't seen "<<dest_node<<" before yet. Adding it to our table!"<<endl;
                 isNewLink = true;
             }
+
+            double cost_in_table_at_current = routing_table.cost[dest_node];
+
+
 
             cerr<<"\t\t(" <<dest_node << ")The total cost is "<< new_total_cost<<endl;
             cerr<<"\t\t(" <<dest_node << ")The cost in table is "<< cost_in_table_at_current <<endl;
@@ -68,7 +72,7 @@ bool DistanceVector::findImprove()
             // Compare the cost that we have at current to this node with the distance our neighbor is advertising
             if(new_total_cost < cost_in_table_at_current || isNewLink)
             {
-                cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
+                cerr<<"We're adding a link from "<<GetNumber() << " to "<< dest_node<<" (hop " << neighbor_node <<") with a cost of "<<new_total_cost<<endl;
                 routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
                 aChangeWasMade = true;
             }
