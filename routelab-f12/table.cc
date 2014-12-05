@@ -37,9 +37,98 @@ Table &Table::operator=(const Table &rhs)
 
     ostream & Table::Print(ostream &os) const
     {
-      os << "LinkState Table()";
-      return os;
+        os << endl << "*****DistanceVector Table()*****" << endl;
+
+        os << "|======================|" << endl;
+        os << "|         COST         |" << endl;
+        os << "|======================|" << endl;
+        map<int, double>::const_iterator it;
+        for (it = cost.begin(); it != cost.end(); ++it)
+        {
+            int dest = it->first;
+            int cost_to = (int) it->second;
+            if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+            else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
+        }
+        os << "|======================|"<<endl;
+
+        os<<endl;
+
+        os << "|======================|"<<endl;
+        os << "|         HOP          |"<<endl;
+        os << "|======================|"<<endl;
+
+        // map<int, int> hop;
+
+        map<int, int>::const_iterator it1;
+        for (it1 = hop.begin(); it1 != hop.end(); ++it1)
+        {
+            int dest = it1->first;
+            int step = it1->second;
+            os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
+        }
+        os << "|======================|"<<endl << endl;
+
+
+        os << endl;
+        os << endl;
+
+        os << "|======================|"<<endl;
+        os << "|         NEH          |"<<endl;
+        os << "|======================|"<<endl;
+
+
+        map<int, double>::const_iterator it2;
+        for (it2 = neighbor_table.begin(); it2 != neighbor_table.end(); ++it2)
+        {
+            int dest = it2->first;
+            int cost_to = (int) it2->second;
+            if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+            else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
+        }
+        os << "|======================|"<<endl << endl;
+
+
+        os << endl;
+        os << endl;
+
+
+
+
+        os << "\t\t|======================|"<<endl;
+        os << "\t\t|======================|"<<endl;
+        os << "\t\t||         TOPO        ||"<<endl;
+        os << "\t\t|======================|"<<endl;
+        os << "\t\t|======================|"<<endl;
+
+
+        map<int, map <int, double> >::const_iterator it3;
+        for(it3 = topology.begin(); it3 != topology.end(); ++it3)
+        {
+            int myNeh = it3->first;
+
+            os << endl;
+            os << "\t\t|======================|"<<endl;
+            os << "\t\t|           "<<myNeh<<"          |"<<endl;
+            os << "\t\t|======================|"<<endl;
+
+
+            map<int, double> costNeh = it3->second;
+
+            map<int, double>::const_iterator it4;
+            for(it4 = costNeh.begin(); it4 != costNeh.end(); ++it4)
+            {
+                int dest = it4->first;
+                int cost_to = (int) it4->second;
+                if(cost_to > 9) os << "\t\t|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+                else os << "\t\t|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
+            }
+            os << "\t\t|======================|"<<endl << endl;
+        }
+        return os;
     }
+
+
 
 
 

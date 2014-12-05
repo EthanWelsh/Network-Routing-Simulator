@@ -65,6 +65,7 @@ class Table
         map<int, map< int, double > > topology;
         map<int, double> neighbor_table;
         map<int, int> hop;
+        map<int, double> cost;
 
 
 

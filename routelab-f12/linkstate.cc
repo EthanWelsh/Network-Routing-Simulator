@@ -36,15 +36,18 @@ void LinkState::LinkHasBeenUpdated(Link *l)
     int link_dest = l->GetDest();
     int link_cost = l->GetLatency();
 
+    routing_table.neighbor_table[link_dest] = link_cost;
+
     // If this is the first time we've seen this node...
     if(routing_table.neighbor_table.find(link_dest) == routing_table.neighbor_table.end())
     {
-        routing_table.neighbor_table[link_dest] = link_cost;
+
         routing_table.hop[link_dest] = link_dest;
+        routing_table.cost[link_dest] = link_cost;
     }
     else
     {
-        double old_cost = routing_table.neighbor_table[link_dest];
+        double old_cost = routing_table.cost[link_dest];
         double change_in_cost = link_cost - old_cost;
 
         cerr<<"You've already got "<<link_dest<<" down in your table with a cost of "<<old_cost<<endl;
@@ -71,9 +74,9 @@ void LinkState::LinkHasBeenUpdated(Link *l)
                 cerr<<"Your path to " << table_dest << " was also using " << table_neighbor << endl;
                 cerr<<"The old length is " << routing_table.neighbor_table[table_dest] << " but we're adding " << change_in_cost << endl;
 
-                routing_table.neighbor_table[table_dest] += change_in_cost;
+                routing_table.cost[table_dest] += change_in_cost;
 
-                cerr<<"So the new value is " << routing_table.neighbor_table[table_dest] << endl;
+                cerr<<"So the new value is " << routing_table.cost[table_dest] << endl;
 
                 /* We have found a path to another node that uses the node which is the destination in the
                    changed connection. We now need to adjust our cost for this path accordingly.
@@ -96,11 +99,28 @@ void LinkState::LinkHasBeenUpdated(Link *l)
 
 void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
-    cerr << *this << " got a routing message: " << *m << " (ignored)" << endl;
+    cerr << endl << endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "ROUTING MESSAGE:" << *m << endl << endl;
+
+    routing_table.topology[m->src_node] = m->neighbor_table;
+
+    findImprove();
+
+    cerr << *this << endl;
+    cerr << "***********************************************"<<endl;
+    cerr << "***********************************************"<<endl;
+
+
+
 }
 
-void LinkState::LinkState::findImprove()
+void LinkState::findImprove()
 {
+
+
+
 
 }
 
