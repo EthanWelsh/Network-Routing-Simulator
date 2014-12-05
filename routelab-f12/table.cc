@@ -17,21 +17,6 @@ Table::Table(const Table &rhs)
  along with the corresponding weights to each node. In addition to this, we'll fill out our hop table appropriately. In
  order to run this, you'll pass in this.getOutGoingConnections() from the node that you're trying to make this table for.
  */
-Table::Table(deque<Link *> *links)
-{
-
-    cost[links->front()->GetSrc()] = 0;
-
-    for (deque<Link *>::iterator i = links->begin(); i != links->end(); ++i)
-    {
-        unsigned int dest = (*i)->GetDest();
-        double latency = (*i)->GetLatency();
-
-        updateTable(dest, dest, latency);
-    }
-    delete links;
-}
-
 
 Table &Table::operator=(const Table &rhs)
 {
@@ -45,27 +30,29 @@ Table &Table::operator=(const Table &rhs)
 
 #endif
 
-#if defined(LINKSTATE)
-	/*int Table::UpdateLink(const Link *link)
-	{
-		int src = link->GetSrc();
-		int dest = link->GetDest();
-		int latency = link->GetLatency();
-		int age= ++table[src][dest].age;
+//#if defined(LINKSTATE)
 
-		table[src][dest].age = age;
-		table[source][dest].cost = latency;
-		return age;
-	}
+
+
 
     ostream & Table::Print(ostream &os) const
     {
       os << "LinkState Table()";
       return os;
-    }*/
-#endif
+    }
 
-//#if defined(DISTANCEVECTOR)
+
+//#endif
+
+
+
+
+
+
+
+
+
+#if defined(DISTANCEVECTOR)
 
 /*
  Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
@@ -149,4 +136,4 @@ ostream & Table::Print(ostream &os) const
     return os;
 }
 
-//#endif
+#endif

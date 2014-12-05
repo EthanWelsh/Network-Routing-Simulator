@@ -47,34 +47,29 @@ class Table
 
         map<int, map< int, TopoLink > > topo;
 
+
+#if defined(DISTANCEVECTOR)
         map<int, map< int, double > > distance_vectors;
         map<int, double> cost;
         map<int, int> hop;
+        void updateTable(unsigned int dest, unsigned int next, double latency);
+#endif
 
         Table();
-
         Table(const Table &);
         Table(deque<Link *> *links);
-
         Table &operator=(const Table &);
-
         ostream &Print(ostream &os) const;
 
-        // Anything else you need
-
-        #if defined(LINKSTATE)
-
-        #endif
-
-        #if defined(DISTANCEVECTOR)
-
-        //void Table::updateTable(unsigned int, unsigned int, int);
+        //#if defined(LINKSTATE)
 
 
 
-        #endif
 
-    void updateTable(unsigned int dest, unsigned int next, double latency);
+
+        //#endif
+
+
 
 };
 
