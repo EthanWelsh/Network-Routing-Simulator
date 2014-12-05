@@ -32,9 +32,9 @@ map<int, double> RoutingMessage::getDistanceVector()
 {
     return cost;
 }
-#endif
 
 unsigned int RoutingMessage::getSrc()
 {
     return src_node;
 }
+#endif

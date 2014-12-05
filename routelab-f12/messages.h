@@ -10,11 +10,19 @@ struct RoutingMessage {
     RoutingMessage();
     RoutingMessage(const RoutingMessage &rhs);
 
-#if defined(DISTANCEVECTOR)
-    RoutingMessage(map<int, double> ccc, unsigned int src);
-#endif
+
 
 public:
+
+//#if defined(DISTANCEVECTOR)
+
+    RoutingMessage(map<int, double> ccc, unsigned int src);
+    map<int, double> neighbor_table;
+    unsigned int src_node;
+
+//#endif
+
+
 #if defined(DISTANCEVECTOR)
     map<int, double> getDistanceVector();
     unsigned int getSrc();

@@ -2,6 +2,7 @@
 #define _linkstate
 
 #include "node.h"
+#include <queue>
 
 class LinkState : public Node
 {
@@ -31,6 +32,9 @@ public:
     ostream &Print(ostream &os) const;
 
     // Anything else
+
+    priority_queue<int> pq;
+
 };
 
 inline ostream &operator<<(ostream &os, const LinkState &n)
