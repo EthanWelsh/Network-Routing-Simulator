@@ -21,6 +21,44 @@ DistanceVector::~DistanceVector()
 {
 }
 
+void DistanceVector::findImprove()
+{
+    deque<Node*>neighborNodes = *Node::GetNeighbors();
+    deque<Node *>::iterator it;
+
+    for (it = neighborNodes.begin(); it != neighborNodes.end(); ++it)
+    {
+        int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
+
+        // Look at the distance vectors from this node to every other node in the graph
+        map<int, double> node_vector = routing_table.distance_vectors[neighbor_node];
+
+        // Look at every entry in their distance vector table and see if any of their paths are improvements
+        std::map<int, double>::iterator iter;
+        for(iter = node_vector.begin(); iter != node_vector.end(); iter++)
+        {
+            int dest_node = iter->first;
+
+            double cost_to_neighbor = routing_table.cost[neighbor_node];
+            double cost_from_neighbor_to_dest = node_vector[dest_node];
+            double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
+
+            double cost_in_table_at_current = routing_table.cost[dest_node];
+
+            // If our neighbor DOES has a path to the node we're looking for...
+            if(cost_from_neighbor_to_dest != -1)
+            {
+                // Compare the cost that we have at current to this node with the distance our neighbor is advertising
+                if(new_total_cost < cost_in_table_at_current)
+                {
+                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
+                    routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
+                }
+            }
+        }
+    }
+}
+
 
 /** Write the following functions.  They currently have dummy implementations **/
 /*
@@ -78,50 +116,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
     // the link change could have drastically increased the cost of our link. We'll now look through all our
     // neighbors and see who has the smallest path to offer us.
-    deque<Node*>neighborNodes = *Node::GetNeighbors();
 
-    deque<Node *>::iterator it;
+    findImprove();
 
-    for (it = neighborNodes.begin(); it != neighborNodes.end(); ++it)
-    {
-        int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
-
-        // Look at the distance vectors from this node to every other node in the graph
-        map<int, double> node_vector = routing_table.distance_vectors[neighbor_node];
-
-        // Look at every entry in their distance vector table and see if any of their paths are improvements
-
-
-        std::map<int, double>::iterator iter;
-
-        for(iter = node_vector.begin(); iter != node_vector.end(); iter++)
-        {
-
-            cout<<"A"<<endl;
-
-            int dest_node = iter->first;
-
-            double cost_to_neighbor = routing_table.cost[neighbor_node];
-            double cost_from_neighbor_to_dest = node_vector[dest_node];
-            double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
-
-            double cost_in_table_at_current = routing_table.cost[dest_node];
-
-            // If our neighbor DOES has a path to the node we're looking for...
-            if(cost_from_neighbor_to_dest != -1)
-            {
-                // Compare the cost that we have at current to this node with the distance our neighbor is advertising
-                if(new_total_cost < cost_in_table_at_current)
-                {
-                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
-                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
-                    routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
-                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
-                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
-                }
-            }
-        }
-    }
 
     // Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
     // in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
