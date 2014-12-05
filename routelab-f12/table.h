@@ -29,6 +29,8 @@ struct TopoLink
 
     int cost;
     int age;
+	
+	bool visited;
 };
 
 // Students should write this class
@@ -36,15 +38,7 @@ class Table
 {
     private:
 
-
-
-
-
-
-
-    public:
-
-
+	public:
         map<int, map< int, TopoLink > > topo;
 
         map<int, map< int, double > > distance_vectors;
@@ -64,7 +58,8 @@ class Table
         // Anything else you need
 
         #if defined(LINKSTATE)
-
+			map <int, int> hopMap;	// Map to hold the hops
+			bool change_the_hop_map;
         #endif
 
         #if defined(DISTANCEVECTOR)

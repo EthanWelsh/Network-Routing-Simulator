@@ -2,8 +2,10 @@
 #define _linkstate
 
 #include "node.h"
+#define INT_MAX 21474783
 
-class LinkState: public Node {
+class LinkState: public Node
+{
     private:
         // Anything you need in addition to Node members
 
@@ -22,6 +24,7 @@ class LinkState: public Node {
         ostream & Print(ostream & os) const;
 
         // Anything else
+		Node* GetMatchingNode(unsigned n);
 };
 
 inline ostream & operator<<(ostream & os, const LinkState & n) {
