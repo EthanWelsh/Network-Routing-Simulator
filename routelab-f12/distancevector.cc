@@ -227,12 +227,10 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
     {
         SendToNeighbors(new RoutingMessage(routing_table.cost, GetNumber()));
     }
-
 }
 
 int DistanceVector::costToNeighbor(int neighborNum)
 {
-
     deque<Link *> *myNeighbors = GetOutgoingLinks();
 
     for(unsigned int i = 0; i < myNeighbors->size(); i++)
@@ -278,8 +276,6 @@ Node *DistanceVector::GetNextHop(Node *destination)
  table. The framework will eventually delete the table. We expect your routing
  table to be able to print itself.
  */
-
-
 ostream &DistanceVector::Print(ostream &os) const
 {
     Node::Print(os);
