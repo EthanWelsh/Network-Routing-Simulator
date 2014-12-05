@@ -89,14 +89,21 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
         // Find the distance specifically associated with the destination node of the changed link.
         // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
-        double cost_to_dest_through_node = routing_table.cost[neighbor_node] + change_in_cost;
+
+        double cost_to_neighbor = routing_table.cost[neighbor_node];
+        double cost_from_neighbor_to_dest = node_vector[link_dest].cost;
+        double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
+
         double cost_in_table_at_current = routing_table.cost[link_dest];
 
-        // Compare the cost that we have at current to this node with the distance our neighbor is advertising
-        if(cost_to_dest_through_node < cost_in_table_at_current && cost_to_dest_through_node != -1)
+        // If our neighbor DOES has a path to the node we're looking for...
+        if(cost_from_neighbor_to_dest != -1)
         {
-            routing_table.cost[link_dest] = cost_to_dest_through_node;
-            routing_table.hop[link_dest] = neighbor_node;
+            // Compare the cost that we have at current to this node with the distance our neighbor is advertising
+            if(new_total_cost < cost_in_table_at_current)
+            {
+                routing_table.updateTable(link_dest, neighbor_node, new_total_cost);
+            }
         }
     }
 
