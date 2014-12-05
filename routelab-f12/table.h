@@ -61,7 +61,7 @@ class Table
         Table &operator=(const Table &);
         ostream &Print(ostream &os) const;
 
-        //#if defined(LINKSTATE)
+        #if defined(LINKSTATE)
         map<int, map< int, double > > topology;
         map<int, double> neighbor_table;
         map<int, int> hop;
@@ -72,7 +72,7 @@ class Table
 
 
 
-        //#endif
+        #endif
 
 
 
