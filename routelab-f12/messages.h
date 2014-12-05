@@ -9,14 +9,14 @@
 struct RoutingMessage {
     RoutingMessage();
     RoutingMessage(const RoutingMessage &rhs);
-    RoutingMessage(Table &t, unsigned int src);
+    RoutingMessage(map<int, double> ccc, unsigned int src);
 
 
 public:
     map<int, double> getDistanceVector();
     unsigned int getSrc();
 
-    Table costTable;
+    map<int, double> cost;
     unsigned int src_node;
 
     RoutingMessage &operator=(const RoutingMessage &rhs);
