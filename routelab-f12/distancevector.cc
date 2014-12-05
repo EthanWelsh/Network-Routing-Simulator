@@ -64,8 +64,6 @@ bool DistanceVector::findImprove()
 
             double cost_in_table_at_current = routing_table.cost[dest_node];
 
-
-
             cerr<<"\t\t(" <<dest_node << ")The total cost is "<< new_total_cost<<endl;
             cerr<<"\t\t(" <<dest_node << ")The cost in table is "<< cost_in_table_at_current <<endl;
 
@@ -79,7 +77,7 @@ bool DistanceVector::findImprove()
         }
     }
     cerr<<"--------IMPROVE END-------"<<endl;
-    cerr<<"NOW here's the table "<<routing_table<<endl;
+
     return aChangeWasMade;
 }
 
@@ -112,11 +110,11 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     {
         cerr<<"Can't find " << link_dest << " in cost table. Adding it now!"<<endl;
         routing_table.updateTable(link_dest, link_dest, link_cost);
-        cerr<<"I added it to the table: "<<routing_table<<endl;
+
 
         cerr<<"Finding an improved way to get to " << link_dest << endl;
         findImprove();
-        cerr<<"Here is the improved table"<<routing_table<<endl;
+
 
         cerr<<endl<<*this<<endl;
 
@@ -175,12 +173,8 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     */
 
     cerr<<"Phew. We've changed all the links that we need to change. Now time to make sure our paths are still the shortest."<<endl;
-    cerr<<"Before"<<routing_table<<endl;
 
     findImprove();
-
-    cerr<<"After"<<routing_table<<endl;
-
 
     /* Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
      in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
@@ -285,5 +279,3 @@ ostream &DistanceVector::Print(ostream &os) const
     Node::Print(os);
     return os;
 }
-
-
