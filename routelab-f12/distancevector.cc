@@ -44,6 +44,8 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     {
         routing_table.updateTable(link_dest, link_dest, link_cost);
         cerr<<endl<<*this<<endl;
+
+        SendToNeighbors(new RoutingMessage(routing_table, GetNumber()));
         return;
     }
 
@@ -87,22 +89,26 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         // Look at the distance vectors from this node to every other node in the graph
         map<int, TopoLink> &node_vector = routing_table.distance_vectors[neighbor_node];
 
-        // Find the distance specifically associated with the destination node of the changed link.
-        // The cost is the cost to your neighbor plus the distance from your neighbor to the destination
-
-        double cost_to_neighbor = routing_table.cost[neighbor_node];
-        double cost_from_neighbor_to_dest = node_vector[link_dest].cost;
-        double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
-
-        double cost_in_table_at_current = routing_table.cost[link_dest];
-
-        // If our neighbor DOES has a path to the node we're looking for...
-        if(cost_from_neighbor_to_dest != -1)
+        // Look at every entry in their distance vector table and see if any of their paths are improvements
+        typedef std::map<int, TopoLink>::iterator iter;
+        for(it_type iter = node_vector.begin(); iter != node_vector.end(); iter++)
         {
-            // Compare the cost that we have at current to this node with the distance our neighbor is advertising
-            if(new_total_cost < cost_in_table_at_current)
+            int dest_node = iter->first;
+
+            double cost_to_neighbor = routing_table.cost[neighbor_node];
+            double cost_from_neighbor_to_dest = node_vector[dest_node].cost;
+            double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
+
+            double cost_in_table_at_current = routing_table.cost[dest_node];
+
+            // If our neighbor DOES has a path to the node we're looking for...
+            if(cost_from_neighbor_to_dest != -1)
             {
-                routing_table.updateTable(link_dest, neighbor_node, new_total_cost);
+                // Compare the cost that we have at current to this node with the distance our neighbor is advertising
+                if(new_total_cost < cost_in_table_at_current)
+                {
+                    routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
+                }
             }
         }
     }
