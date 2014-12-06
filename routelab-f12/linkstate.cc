@@ -1,7 +1,6 @@
 #include "linkstate.h"
 
-LinkState::LinkState(unsigned n, SimulationContext *c, double b, double l) :
-        Node(n, c, b, l)
+LinkState::LinkState(unsigned n, SimulationContext *c, double b, double l) : Node(n, c, b, l)
 {
     seq = 0;
 }
@@ -38,102 +37,60 @@ void LinkState::LinkHasBeenUpdated(Link *l)
     int link_dest = l->GetDest();
     int link_cost = l->GetLatency();
 
-    // If this is the first time we've seen this node...
-    if(routing_table.neighbor_table.find(link_dest) == routing_table.neighbor_table.end())
-    {
-        routing_table.neighbor_table[link_dest] = link_cost;
-        routing_table.hop[link_dest] = link_dest;
-        routing_table.cost[link_dest] = link_cost;
-    }
-    else
-    {
+    routing_table.neighbor_table[link_dest] = link_cost;
 
-        double old_cost = routing_table.neighbor_table[link_dest];
-        double change_in_cost = link_cost - old_cost;
-
-        routing_table.neighbor_table[link_dest] = link_cost;
-
-        cerr<<"You've already got "<<link_dest<<" down in your table with a cost of "<<old_cost<<endl;
-        cerr<<"We're changing the link to " << link_cost<<" which is a change of "<<change_in_cost<<" from the original."<<endl;
-
-        /* We should look through our hop table. When we find an entry where the
-         hop uses the node which is the DESTINATION of the passed in link, we
-         should change our table accordingly.*/
-
-        int table_dest;
-        int table_neighbor;
-
-        /* Iterate through our map in order to find where we need to make adjustments to our paths costs
-           because of the changed link.*/
-
-        typedef std::map<int, int>::iterator it_type;
-        for(it_type iterator = routing_table.hop.begin(); iterator != routing_table.hop.end(); iterator++)
-        {
-            table_dest = iterator->first;
-            table_neighbor = iterator->second;
-
-            if(table_neighbor == link_dest)
-            {
-                cerr<<"Your path to " << table_dest << " was also using " << table_neighbor << endl;
-                cerr<<"The old length is " << routing_table.neighbor_table[table_dest] << " but we're adding " << change_in_cost << endl;
-
-                routing_table.cost[table_dest] += change_in_cost;
-
-                cerr<<"So the new value is " << routing_table.cost[table_dest] << endl;
-
-                /* We have found a path to another node that uses the node which is the destination in the
-                   changed connection. We now need to adjust our cost for this path accordingly.
-                */
-
-            }
-        }
-    }
-
-    findImprove();
+    cerr<<routing_table<<endl;
 
     cerr<<"SENDING MESSAGE TO NEIGHBORS (from " << GetNumber() << ")"<<endl;
+
+
+    seq++;
+
+    cerr<<"SEQ = " << seq << endl;
+
+    SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber(), seq));
 
     cerr<<"***********************************************"<<endl;
     cerr<<"***********************************************"<<endl;
     cerr<<endl<<endl;
-
-    SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber(), seq));
 }
+
+
 
 void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
-    cerr << endl << endl;
-    cerr << "***********************************************" << endl;
-    cerr << "***********************************************" << endl;
-    cerr << "ROUTING MESSAGE:" << *m << endl << endl;
+    if(m->src_node == GetNumber()) return;
 
     if(message_seqs.find(m->src_node) == message_seqs.end())
     {
         routing_table.topology[m->src_node] = m->neighbor_table;
-        Flood(m);
         message_seqs[m->src_node] = m->seq;
+        Flood(m);
     }
     else
     {
         if (message_seqs[m->src_node] < m->seq )
         {
             routing_table.topology[m->src_node] = m->neighbor_table;
-            Flood(m);
             message_seqs[m->src_node] = m->seq;
+            Flood(m);
         }
+        else
+        {
+            cerr<<"DISCARDING message. I already have a SEQ num of "<< message_seqs[m->src_node] << " from " << m->seq << endl;
+        }
+
     }
 
-    cerr << *this << endl;
-    cerr << "***********************************************" << endl;
-    cerr << "***********************************************" << endl;
+    cerr << "ROUTING MESSAGE: (" << m->src_node << " -> " << GetNumber() << ") : " << m->seq << endl;
+
 
 }
 
 
 void LinkState::Flood(RoutingMessage *m)
 {
-    seq = m->seq;
-    findImprove();
+    cerr<<"FLOODING: "<<m->src_node << " (" << m->seq << ")" <<endl;
     SendToNeighbors(m);
 }
 
@@ -178,7 +135,10 @@ public:
 
 void LinkState::findImprove()
 {
-    int me = GetNumber();
+    routing_table.cost.clear();
+    routing_table.hop.clear();
+
+    /*int me = GetNumber();
     priority_queue<myNode> pq;
 
     routing_table.cost[me] = 0;
@@ -231,7 +191,7 @@ void LinkState::findImprove()
                 }
             }
         }
-    }
+    } */
 }
 
 
@@ -242,7 +202,10 @@ void LinkState::TimeOut()
 
 Node *LinkState::GetNextHop(Node *destination)
 {
-    return routing_table.hop[destination->GetNumber()];
+    Node *n = new Node(0, NULL, 0, 0);
+    //n->SetNumber(routing_table.hop[destination->GetNumber()]);
+
+    return n;
 }
 
 Table *LinkState::GetRoutingTable()
@@ -252,6 +215,6 @@ Table *LinkState::GetRoutingTable()
 
 ostream &LinkState::Print(ostream &os) const
 {
-    Node::Print(os);
+    //Node::Print(os);
     return os;
 }

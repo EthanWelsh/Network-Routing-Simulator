@@ -1,3 +1,5 @@
+#define LINKSTATE
+
 #ifndef _messages
 #define _messages
 
@@ -14,7 +16,7 @@ struct RoutingMessage {
 
 public:
 
-//#if defined(LINKSTATE)
+#if defined(LINKSTATE)
 
     RoutingMessage(map<int, double> ccc, unsigned int src, int s);
 
@@ -24,7 +26,7 @@ public:
     map<int, double> getNeighborTable();
     int seq;
 
-//#endif
+#endif
 
 
 #if defined(DISTANCEVECTOR)
@@ -46,6 +48,5 @@ public:
 };
 
 inline ostream & operator<<(ostream &os, const RoutingMessage & m) { return m.Print(os);}
-
 
 #endif

@@ -38,10 +38,6 @@ public:
 
     map<int, int> message_seqs;
     int seq;
-
-
-
-
 };
 
 inline ostream &operator<<(ostream &os, const LinkState &n)
