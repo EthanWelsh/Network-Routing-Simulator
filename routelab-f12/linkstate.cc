@@ -89,9 +89,6 @@ void LinkState::Flood(RoutingMessage *m)
     SendToNeighbors(m);
 }
 
-
-
-
 class myNode
 {
     int node;
@@ -131,7 +128,7 @@ public:
 
 void LinkState::findImprove()
 {
-    /*routing_table.cost.clear();
+    routing_table.cost.clear();
     routing_table.hop.clear();
 
     int me = GetNumber();
@@ -165,7 +162,7 @@ void LinkState::findImprove()
 
         map<int, double> curr_node_table = routing_table.topology[curr_num];
 
-        for(it_type it2 = routing_table.neighbor_table.begin(); it2 != routing_table.neighbor_table.end(); it2++)
+        for(it_type it2 = curr_node_table.begin(); it2 != curr_node_table.end(); it2++)
         {
             int neighbor_of_curr = it2->first;
             double cost_to_neighbor_of_curr = it2->second + curr_cost;
@@ -188,7 +185,6 @@ void LinkState::findImprove()
             }
         }
     }
-    */
 }
 
 
