@@ -183,6 +183,7 @@ void LinkState::findImprove()
 
     routing_table.cost[me] = 0;
 
+    // Add all your neighbors to the cost and hop tables and put them in the pq
     typedef std::map<int, double>::iterator it_type;
     for(it_type it1 = routing_table.neighbor_table.begin(); it1 != routing_table.neighbor_table.end(); it1++)
     {
@@ -196,6 +197,8 @@ void LinkState::findImprove()
     }
 
     myNode currentNode(0,0,0);
+
+    // Take a node at a time off the list and add that nodes' neighbors if it results in a better shorter path than before
     while(pq.size() > 0)
     {
         currentNode = pq.top();
@@ -209,35 +212,26 @@ void LinkState::findImprove()
         for(it_type it2 = routing_table.neighbor_table.begin(); it2 != routing_table.neighbor_table.end(); it2++)
         {
             int neighbor_of_curr = it2->first;
-            double cost_to_neightbor_of_curr = it2->second + curr_cost;
+            double cost_to_neighbor_of_curr = it2->second + curr_cost;
 
             if(routing_table.cost.find(neighbor_of_curr) == routing_table.cost.end())
             { // could not find
-                routing_table.cost[neighbor_of_curr] = cost_to_neightbor_of_curr;
-                pq.push(myNode(neighbor_of_curr, cost_to_neightbor_of_curr, currentNode.getSrc()));
+                routing_table.cost[neighbor_of_curr] = cost_to_neighbor_of_curr;
+                routing_table.hop[neighbor_of_curr] = currentNode.getSrc();
+
+                pq.push(myNode(neighbor_of_curr, cost_to_neighbor_of_curr, currentNode.getSrc()));
             }
             else
             {
-                if(cost_to_neightbor_of_curr < routing_table.cost[neighbor_of_curr])
+                if(cost_to_neighbor_of_curr < routing_table.cost[neighbor_of_curr])
                 {
-                    routing_table.cost[neighbor_of_curr] = cost_to_neightbor_of_curr;
+                    routing_table.cost[neighbor_of_curr] = cost_to_neighbor_of_curr;
+                    routing_table.hop[neighbor_of_curr] = currentNode.getSrc();
+                    pq.push(myNode(neighbor_of_curr, cost_to_neighbor_of_curr, currentNode.getSrc()));
                 }
             }
-
-
-
-
         }
-
-
-
     }
-
-
-
-
-
-
 }
 
 
@@ -248,7 +242,7 @@ void LinkState::TimeOut()
 
 Node *LinkState::GetNextHop(Node *destination)
 {
-    return NULL;
+    return routing_table.hop[destination->GetNumber()];
 }
 
 Table *LinkState::GetRoutingTable()
