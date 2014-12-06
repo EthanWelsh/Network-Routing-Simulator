@@ -195,7 +195,14 @@ void LinkState::TimeOut()
 
 Node *LinkState::GetNextHop(Node *destination)
 {
-    return NULL;
+    findImprove();
+    int dest = destination->GetNumber();
+    int next = routing_table.hop[dest];
+
+    Node *n = new Node(0, NULL, 0, 0);
+    n->SetNumber(next);
+
+    return n;
 }
 
 Table *LinkState::GetRoutingTable()
