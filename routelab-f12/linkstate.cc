@@ -1,196 +1,217 @@
 #include "linkstate.h"
-#include "context.h"
-#include <set>
 
-LinkState::LinkState(unsigned n, SimulationContext* c, double b, double l) :
-    Node(n, c, b, l)
-{}
-
-LinkState::LinkState(const LinkState & rhs) :
-    Node(rhs)
+LinkState::LinkState(unsigned n, SimulationContext *c, double b, double l) : Node(n, c, b, l)
 {
-    *this = rhs;
+    seq = 0;
 }
 
-LinkState & LinkState::operator=(const LinkState & rhs) {
+LinkState::LinkState(const LinkState &rhs) :
+        Node(rhs)
+{
+    *this = rhs;
+    seq = 0;
+}
+
+LinkState &LinkState::operator=(const LinkState &rhs)
+{
     Node::operator=(rhs);
     return *this;
 }
 
 LinkState::~LinkState()
-{}
+{
+}
 
 /** Write the following functions.  They currently have dummy implementations **/
-void LinkState::LinkHasBeenUpdated(Link* l)
+
+
+
+void LinkState::LinkHasBeenUpdated(Link *l)
 {
-    cerr << *this << ": Link Update: " << *l << endl;
-    
-	// Get the latency and update the link in the table
-	int src= l-> GetSrc();
-	int dest= l-> GetDest();
-	int latency= l-> GetLatency();
-	routing_table.topo[src][dest].cost= latency;
-	
-	// Update the age of the link since it is being updated
-	int age= routing_table.topo[src][dest].age;
-    routing_table.topo[src][dest].age = ++age;
-	
-	// Send the message to the rest of the connections
-	SendToNeighbors(new RoutingMessage());
+
+    cerr<<endl<<endl;
+    cerr<<"***********************************************"<<endl;
+    cerr<<"***********************************************"<<endl;
+    cerr << endl << "LINK UPDATE: " << *l << endl << endl;
+
+    int link_dest = l->GetDest();
+    int link_cost = l->GetLatency();
+
+    routing_table.neighbor_table[link_dest] = link_cost;
+
+    cerr<<routing_table<<endl;
+
+    seq++;
+
+    cerr<< "("<<GetNumber()<<") SENDING MESSAGE TO NEIGHBORS (" << seq << ")"<<endl;
+
+
+    SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber(), seq));
+
+    cerr<<"***********************************************"<<endl;
+    cerr<<"***********************************************"<<endl;
+    cerr<<endl<<endl;
 }
+
+
 
 void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
 {
-    //cerr << *this << " got a routing message: " << *m << " (ignored)" << endl;
-	
-	int src = m->src;
-    int dest = m->dest;
-	int age = m->age;
-    int latency = m->latency;
-	
-	// Update the node's table with new info
-	// First check to see if it exists
-	if(routing_table.topo[src][dest].cost == -1)
+    if(m->src_node == GetNumber()) return;
+
+    if(message_seqs.find(m->src_node) == message_seqs.end())
     {
-        // If not add it to the table
-        routing_table.topo[src][dest].age = age;
-        routing_table.topo[src][dest].cost = latency;
-        routing_table.change_the_hop_map = true; // TODO in table --- change made to the map
-        SendToNeighbors(m);
+        routing_table.topology[m->src_node] = m->neighbor_table;
+        message_seqs[m->src_node] = m->seq;
+        Flood(m);
     }
-	// In the list so just update the age
-	else if(routing_table.topo[src][dest].age < age)
+    else
     {
-        // We have seen this combination before we now just update the age
-        routing_table.topo[src][dest].age = age;
-        routing_table.topo[src][dest].cost = lat;
-        routing_table.change_the_hop_map = true; // TODO in table --- change made to the map
-        SendToNeighbors(m);
+        if (message_seqs[m->src_node] < m->seq )
+        {
+            routing_table.topology[m->src_node] = m->neighbor_table;
+            message_seqs[m->src_node] = m->seq;
+            Flood(m);
+        }
+        else
+        {
+            //cerr<< "(" <<GetNumber() << ") DISCARDING message. I already have a SEQ num of "<< message_seqs[m->src_node] << " from " << m->seq << endl;
+        }
+    }
+
+    cerr << "(" <<GetNumber() << ") ROUTING MESSAGE: (" << m->src_node << " -> " << GetNumber() << ") : " << m->seq << endl;
+}
+
+
+void LinkState::Flood(RoutingMessage *m)
+{
+    cerr<<"(" <<GetNumber()<< ") FLOODING: "<<m->src_node << " (" << m->seq << ")" <<endl;
+    SendToNeighbors(m);
+}
+
+class myNode
+{
+    int node;
+    int src;
+
+public:
+
+    myNode(int n, int c, int s) : node(n), costToNode(c), src(s)
+    {
+    }
+
+    friend bool operator<(const myNode &x, const myNode &y)
+    {
+        if (x.costToNode > y.costToNode) return true;
+        else return false;
+    }
+
+    int getNode()const
+    {
+        return node;
+    }
+
+    int getCost()const
+    {
+        return costToNode;
+    }
+
+    int getSrc()const
+    {
+        return src;
+    }
+
+    int costToNode;
+};
+
+
+
+void LinkState::findImprove()
+{
+    routing_table.cost.clear();
+    routing_table.hop.clear();
+
+    int me = GetNumber();
+    priority_queue<myNode> pq;
+
+    routing_table.cost[me] = 0;
+
+    // Add all your neighbors to the cost and hop tables and put them in the pq
+    typedef std::map<int, double>::iterator it_type;
+    for(it_type it1 = routing_table.neighbor_table.begin(); it1 != routing_table.neighbor_table.end(); it1++)
+    {
+        int num_of_this_neighbor = it1->first;
+        double cost_to_this_neighbor = it1->second;
+
+        routing_table.cost[num_of_this_neighbor] = cost_to_this_neighbor;
+        routing_table.hop[num_of_this_neighbor] = num_of_this_neighbor;
+
+        pq.push(myNode(num_of_this_neighbor, cost_to_this_neighbor, num_of_this_neighbor));
+    }
+
+    myNode currentNode(0,0,0);
+
+    // Take a node at a time off the list and add that nodes' neighbors if it results in a better shorter path than before
+    while(pq.size() > 0)
+    {
+        currentNode = pq.top();
+        pq.pop();
+
+        int curr_num = currentNode.getNode();
+        double curr_cost = currentNode.getCost();
+
+        map<int, double> curr_node_table = routing_table.topology[curr_num];
+
+        for(it_type it2 = curr_node_table.begin(); it2 != curr_node_table.end(); it2++)
+        {
+            int neighbor_of_curr = it2->first;
+            double cost_to_neighbor_of_curr = it2->second + curr_cost;
+
+            if(routing_table.cost.find(neighbor_of_curr) == routing_table.cost.end())
+            { // could not find
+                routing_table.cost[neighbor_of_curr] = cost_to_neighbor_of_curr;
+                routing_table.hop[neighbor_of_curr] = currentNode.getSrc();
+
+                pq.push(myNode(neighbor_of_curr, cost_to_neighbor_of_curr, currentNode.getSrc()));
+            }
+            else
+            {
+                if(cost_to_neighbor_of_curr < routing_table.cost[neighbor_of_curr])
+                {
+                    routing_table.cost[neighbor_of_curr] = cost_to_neighbor_of_curr;
+                    routing_table.hop[neighbor_of_curr] = currentNode.getSrc();
+                    pq.push(myNode(neighbor_of_curr, cost_to_neighbor_of_curr, currentNode.getSrc()));
+                }
+            }
+        }
     }
 }
+
 
 void LinkState::TimeOut()
 {
     cerr << *this << " got a timeout: (ignored)" << endl;
 }
 
-Node* LinkState::GetNextHop(Node *destination)
-{ 
-    // Run Djikstra on the map to make its up to date
-	if (routing_table.change_the_hop_map)
-	{
-		map<int, int> distances;
-        set<int> visited;
-		
-		map<int, map<int, TopoLink> > topo = routing_table.topo;
-        int size_of_topo = topo.size();
-        set<int> queue;
-		
-		map<int, TopoLink>::const_iterator itr;
-        map<int, TopoLink> neighbors;
-        map<int, int>::const_iterator prev_itr;
-        map<int, int> previous;
-		
-		for(int i =0; i< size_of_topo; i++) 
-        {
-            distances[i] = INT_MAX;
-            previous[i] = -1;
-        }
-		distances[GetNumber()] = 0;
-        queue.insert(GetNumber()); //Inserts itself into the queue
+Node *LinkState::GetNextHop(Node *destination)
+{
+    findImprove();
+    int dest = destination->GetNumber();
+    int next = routing_table.hop[dest];
 
-        int smallest_node;
-        int minimum;
+    Node *n = new Node(0, NULL, 0, 0);
+    n->SetNumber(next);
 
-        while(!queue.empty())
-		{
-			minimum = INT_MAX;
-            smallest_node = -1;
+    return n;
+}
 
-			for(int i=0; i< size_of_topo; i++)
-			{
-				if(queue.count(i) > 0)
-				{  
-                    if(visited.count(i) < 1)
-                    {
-                        if(distances[i] < minimum)
-                        {
-                            minimum = distances[i];
-                            smallest_node = i;
-                        }
-                    }
-				}
-			}
-		}
-		
-		// Remove the smallest value node from the queue
-		queue.erase(smallest_node);
-		visited.insert(smallest_node);
-		
-		// Find the inserted nodes values
-		neighbors= topo[smallest_node];
-		for(itr= neighbors.begin(); itr!= neighbors.end(); itr++)
-		{
-			if( visited.count(itr->first)< 1 ) 
-			{
-				int v = itr->first;
-				int current_distance;
-				int alt_distance;
-
-				current_distance= distances[v];
-				alt_distance= distances[smallest_node] + topo[smallest_node][v].cost;
-				
-				if(alt_distance < current_distance)
-				{
-					distances[v] = alt_distance;
-					previous[v] = smallest_node;
-
-					if( visited.count(v) < 1)
-					{
-						queue.insert(v);
-					}
-				}
-			}
-		}
-		
-		map<int, int> temp_hop_map;
-        for(prev_itr = previous.begin(); prev_itr != previous.end(); prev_itr++)
-		{
-			unsigned int before = prev_itr->second;
-            int current = prev_itr->first;
-            int current2 = prev_itr->first;
-            while(before != GetNumber())
-			{
-                current = before;
-                before = previous[before];
-            }
-            temp_hop_map[current2]= current;
-        }
-		
-		Node *temp_node = new Node(temp_hop_map[destination->GetNumber()], NULL, 0, 0);
-        Node * real_node = context->FindMatchingNode(const_cast<Node *>(temp_node));
-        routing_table.hopMap = temp_hop_map;
-        routing_table.change_the_hop_map = false;
-        return real_node;
-	}
-	else
-	{   
-		Node *temp_node = new Node(routing_table.hopMap[destination->GetNumber()], NULL, 0, 0);
-        Node * real_node = context->FindMatchingNode(const_cast<Node *>(temp_node));
-        return real_node;        
-    } 
+Table *LinkState::GetRoutingTable()
+{
     return NULL;
 }
 
-Table* LinkState::GetRoutingTable()
+ostream &LinkState::Print(ostream &os) const
 {
-    // This returns a copy of the routing table
-	Table *copy= new Table(routing_table);
-	return copy;
-}
-
-ostream & LinkState::Print(ostream &os) const
-{ 
-    Node::Print(os);
+    //Node::Print(os);
     return os;
 }

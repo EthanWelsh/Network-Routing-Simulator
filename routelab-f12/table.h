@@ -1,3 +1,5 @@
+#define LINKSTATE
+
 #ifndef _table
 #define _table
 
@@ -29,45 +31,38 @@ struct TopoLink
 
     int cost;
     int age;
-	
-	bool visited;
 };
 
 // Students should write this class
 class Table
 {
-    private:
+private:
 
-	public:
-        map<int, map< int, TopoLink > > topo;
 
-        map<int, map< int, double > > distance_vectors;
-        map<int, double> cost;
-        map<int, int> hop;
+public:
 
-        Table();
+    map<int, map< int, TopoLink > > topo;
 
-        Table(const Table &);
-        Table(deque<Link *> *links);
 
-        Table &operator=(const Table &);
-        int getNextHop(unsigned);
-
-        ostream &Print(ostream &os) const;
-
-        // Anything else you need
-
-        #if defined(LINKSTATE)
-			map <int, int> hopMap;	// Map to hold the hops
-			bool change_the_hop_map;
-        #endif
-
-        #if defined(DISTANCEVECTOR)
-
+#if defined(DISTANCEVECTOR)
+            map<int, map< int, double > > distance_vectors;
+            map<int, double> cost;
+            map<int, int> hop;
             void updateTable(unsigned int dest, unsigned int next, double latency);
         #endif
 
+    Table();
+    Table(const Table &);
+    Table(deque<Link *> *links);
+    Table &operator=(const Table &);
+    ostream &Print(ostream &os) const;
 
+#if defined(LINKSTATE)
+    map<int, map< int, double > > topology;
+    map<int, double> neighbor_table;
+    map<int, int> hop;
+    map<int, double> cost;
+#endif
 
 };
 
@@ -75,6 +70,5 @@ inline ostream &operator<<(ostream &os, const Table &t)
 {
     return t.Print(os);
 }
-
 
 #endif

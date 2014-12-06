@@ -1,5 +1,7 @@
 #include "distancevector.h"
 
+#include <stdlib.h>
+
 DistanceVector::DistanceVector(unsigned n, SimulationContext *c, double b, double l) :
         Node(n, c, b, l)
 {
@@ -24,13 +26,19 @@ DistanceVector::~DistanceVector()
 bool DistanceVector::findImprove()
 {
     deque<Node*>neighborNodes = *Node::GetNeighbors();
-    deque<Node *>::iterator it;
 
     bool aChangeWasMade = false;
+
+    deque<Node *>::iterator it;
+
+    cerr<<"----------IMPROVE---------"<<endl;
+    cerr<<"We are "<<GetNumber()<<" and our current table looks like this: "<<routing_table<<endl;
 
     for (it = neighborNodes.begin(); it != neighborNodes.end(); ++it)
     {
         int neighbor_node = (*it)->GetNumber(); // Look through every node in the graph
+
+        cerr<<"\tLooking in "<< neighbor_node << endl;
 
         // Look at the distance vectors from this node to every other node in the graph
         map<int, double> node_vector = routing_table.distance_vectors[neighbor_node];
@@ -42,24 +50,34 @@ bool DistanceVector::findImprove()
             int dest_node = iter->first;
 
             double cost_to_neighbor = routing_table.cost[neighbor_node];
-            double cost_from_neighbor_to_dest = node_vector[dest_node];
+            double cost_from_neighbor_to_dest = iter->second;
             double new_total_cost = cost_to_neighbor + cost_from_neighbor_to_dest;
+
+
+            bool isNewLink = false;
+
+            if(routing_table.cost.find(dest_node) == routing_table.cost.end())
+            {
+                cerr<<"We haven't seen "<<dest_node<<" before yet. Adding it to our table!"<<endl;
+                isNewLink = true;
+            }
 
             double cost_in_table_at_current = routing_table.cost[dest_node];
 
-            // If our neighbor DOES has a path to the node we're looking for...
-            if(cost_from_neighbor_to_dest != -1)
+            cerr<<"\t\t(" <<dest_node << ")The total cost is "<< new_total_cost<<endl;
+            cerr<<"\t\t(" <<dest_node << ")The cost in table is "<< cost_in_table_at_current <<endl;
+
+            // Compare the cost that we have at current to this node with the distance our neighbor is advertising
+            if(new_total_cost < cost_in_table_at_current || isNewLink)
             {
-                // Compare the cost that we have at current to this node with the distance our neighbor is advertising
-                if(new_total_cost < cost_in_table_at_current)
-                {
-                    cerr<<"HEYHEYHEYHEYHEYHEYHEY"<<endl;
-                    routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
-                    aChangeWasMade = true;
-                }
+                cerr<<"We're adding a link from "<<GetNumber() << " to "<< dest_node<<" (hop " << neighbor_node <<") with a cost of "<<new_total_cost<<endl;
+                routing_table.updateTable(dest_node, neighbor_node, new_total_cost);
+                aChangeWasMade = true;
             }
         }
     }
+    cerr<<"--------IMPROVE END-------"<<endl;
+
     return aChangeWasMade;
 }
 
@@ -76,7 +94,7 @@ bool DistanceVector::findImprove()
 void DistanceVector::LinkHasBeenUpdated(Link *l)
 {
 
-    //routing_table.cost[l->GetSrc()] = 0; TODO
+    routing_table.cost[l->GetSrc()] = 0;
 
     cerr<<endl<<endl;
     cerr<<"***********************************************"<<endl;
@@ -84,24 +102,23 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     cerr << endl << "LINK UPDATE: " << *l << endl << endl;
 
     // Get the information from the link that has changed.
-    int link_src = l->GetSrc();
     int link_dest = l->GetDest();
     double link_cost = l->GetLatency();
 
     // If you got an update on an edge that you haven't seen before.
     if(routing_table.cost.find(link_dest) == routing_table.cost.end())
     {
+        cerr<<"Can't find " << link_dest << " in cost table. Adding it now!"<<endl;
         routing_table.updateTable(link_dest, link_dest, link_cost);
 
-        cerr<<"KITTENKITTENKITTEN"<<endl;
 
-
-
+        cerr<<"Finding an improved way to get to " << link_dest << endl;
         findImprove();
+
 
         cerr<<endl<<*this<<endl;
 
-        cerr<<"SENDING MESSAGE TO NEIGHBORS"<<endl;
+        cerr<<"SENDING MESSAGE TO NEIGHBORS (from " << GetNumber() << ")"<<endl;
 
         cerr<<"***********************************************"<<endl;
         cerr<<"***********************************************"<<endl;
@@ -114,6 +131,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
     // Record the old cost that we've recorded about this link.
     double old_cost = routing_table.cost[link_dest];
     double change_in_cost = link_cost - old_cost;
+
+    cerr<<"You've already got "<<link_dest<<" down in your table with a cost of "<<old_cost<<endl;
+    cerr<<"We're changing the link to " << link_cost<<" which is a change of "<<change_in_cost<<" from the original."<<endl;
 
     /* We should look through our hop table. When we find an entry where the
      hop uses the node which is the DESTINATION of the passed in link, we
@@ -133,10 +153,17 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
 
         if(table_neighbor == link_dest)
         {
+            cerr<<"Your path to " << table_dest << " was also using " << table_neighbor << endl;
+            cerr<<"The old length is " << routing_table.cost[table_dest] << " but we're adding " << change_in_cost << endl;
+
+            routing_table.cost[table_dest] += change_in_cost;
+
+            cerr<<"So the new value is " << routing_table.cost[table_dest] << endl;
+
             /* We have found a path to another node that uses the node which is the destination in the
                changed connection. We now need to adjust our cost for this path accordingly.
             */
-        	routing_table.cost[table_dest] += change_in_cost;
+
         }
     }
 
@@ -145,8 +172,9 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
        neighbors and see who has the smallest path to offer us.
     */
 
-    findImprove();
+    cerr<<"Phew. We've changed all the links that we need to change. Now time to make sure our paths are still the shortest."<<endl;
 
+    findImprove();
 
     /* Our tables are now updated. We have taken account for the change and reselected all our shortest paths just
      in case a better one existed. We now need to send a routing message to our neighbors with our new topo so
@@ -199,12 +227,10 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
     {
         SendToNeighbors(new RoutingMessage(routing_table.cost, GetNumber()));
     }
-
 }
 
 int DistanceVector::costToNeighbor(int neighborNum)
 {
-
     deque<Link *> *myNeighbors = GetOutgoingLinks();
 
     for(unsigned int i = 0; i < myNeighbors->size(); i++)
@@ -216,7 +242,7 @@ int DistanceVector::costToNeighbor(int neighborNum)
         }
     }
     cout<<"Error! You asked for the cost to "<<neighborNum<<" but I can't find it."<<endl;
-    return -5;
+    return -1;
 }
 
 
@@ -235,7 +261,13 @@ void DistanceVector::TimeOut()
  */
 Node *DistanceVector::GetNextHop(Node *destination)
 {
-    return NULL;
+    int dest = destination->GetNumber();
+    int next = routing_table.hop[dest];
+
+    Node *n = new Node(0, NULL, 0, 0);
+    n->SetNumber(next);
+
+    return n;
 }
 
 
@@ -244,12 +276,8 @@ Node *DistanceVector::GetNextHop(Node *destination)
  table. The framework will eventually delete the table. We expect your routing
  table to be able to print itself.
  */
-
-
 ostream &DistanceVector::Print(ostream &os) const
 {
     Node::Print(os);
     return os;
 }
-
-
