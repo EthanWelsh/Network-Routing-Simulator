@@ -167,11 +167,6 @@ void DistanceVector::LinkHasBeenUpdated(Link *l)
         }
     }
 
-    /* But we aren't done yet. We have updated our table, but it no longer reflects the shortest paths, as
-       the link change could have drastically increased the cost of our link. We'll now look through all our
-       neighbors and see who has the smallest path to offer us.
-    */
-
     cerr<<"Phew. We've changed all the links that we need to change. Now time to make sure our paths are still the shortest."<<endl;
 
     findImprove();
@@ -228,6 +223,7 @@ void DistanceVector::ProcessIncomingRoutingMessage(RoutingMessage *m)
         SendToNeighbors(new RoutingMessage(routing_table.cost, GetNumber()));
     }
 }
+
 
 int DistanceVector::costToNeighbor(int neighborNum)
 {

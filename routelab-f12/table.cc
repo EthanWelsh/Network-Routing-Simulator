@@ -22,7 +22,6 @@ Table &Table::operator=(const Table &rhs)
 {
     /* For now,  Change if you add more data members to the class */
     topo = rhs.topo;
-
     return *this;
 }
 
@@ -126,86 +125,84 @@ ostream & Table::Print(ostream &os) const
 
 #if defined(DISTANCEVECTOR)
 
-    /*
-     Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
-     what our nextHop is in order to get the shortest cost path.
-     */
-    void Table::updateTable(unsigned int dest, unsigned int next, double latency)
+/*
+ Will change an entry in our table such that we mark that a path exists from us to the destination. We'll also record
+ what our nextHop is in order to get the shortest cost path.
+ */
+void Table::updateTable(unsigned int dest, unsigned int next, double latency)
+{
+    cost[dest] = latency;
+    hop[dest] = next;
+}
+
+
+ostream & Table::Print(ostream &os) const
+{
+    os << endl << "*****DistanceVector Table()*****" << endl;
+
+    os << "|======================|" << endl;
+    os << "|         COST         |" << endl;
+    os << "|======================|" << endl;
+    map<int, double>::const_iterator it;
+    for (it = cost.begin(); it != cost.end(); ++it)
     {
-        cost[dest] = latency;
-        hop[dest] = next;
+        int dest = it->first;
+        int cost_to = (int) it->second;
+        if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
+        else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
     }
+    os << "|======================|"<<endl;
 
+    os<<endl;
 
-    ostream & Table::Print(ostream &os) const
+    os << "|======================|"<<endl;
+    os << "|         HOP          |"<<endl;
+    os << "|======================|"<<endl;
+
+    // map<int, int> hop;
+
+    map<int, int>::const_iterator it1;
+    for (it1 = hop.begin(); it1 != hop.end(); ++it1)
     {
-        os << endl << "*****DistanceVector Table()*****" << endl;
+        int dest = it1->first;
+        int step = it1->second;
+        os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
+    }
+    os << "|======================|"<<endl << endl;
 
-        os << "|======================|" << endl;
-        os << "|         COST         |" << endl;
-        os << "|======================|" << endl;
-        map<int, double>::const_iterator it;
-        for (it = cost.begin(); it != cost.end(); ++it)
+    os << endl;
+    os << endl;
+
+    os << "|======================|"<<endl;
+    os << "|======================|"<<endl;
+    os << "||          DV        ||"<<endl;
+    os << "|======================|"<<endl;
+    os << "|======================|"<<endl;
+
+
+    map<int, map <int, double> >::const_iterator it2;
+    for(it2 = distance_vectors.begin(); it2 != distance_vectors.end(); ++it2)
+    {
+        int myNeh = it2->first;
+
+        os << endl;
+        os << "|======================|"<<endl;
+        os << "|           "<<myNeh<<"          |"<<endl;
+        os << "|======================|"<<endl;
+
+        map<int, double> costNeh = it2->second;
+
+        map<int, double>::const_iterator it3;
+        for(it3 = costNeh.begin(); it3 != costNeh.end(); ++it3)
         {
-            int dest = it->first;
-            int cost_to = (int) it->second;
+            int dest = it3->first;
+            int cost_to = (int) it3->second;
             if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
             else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
         }
-        os << "|======================|"<<endl;
-
-        os<<endl;
-
-        os << "|======================|"<<endl;
-        os << "|         HOP          |"<<endl;
-        os << "|======================|"<<endl;
-
-        // map<int, int> hop;
-
-        map<int, int>::const_iterator it1;
-        for (it1 = hop.begin(); it1 != hop.end(); ++it1)
-        {
-            int dest = it1->first;
-            int step = it1->second;
-            os << "|     "<<dest<<"     |     "<<step<<"    |"<<endl;
-        }
         os << "|======================|"<<endl << endl;
-
-
-        os << endl;
-        os << endl;
-
-        os << "|======================|"<<endl;
-        os << "|======================|"<<endl;
-        os << "||          DV        ||"<<endl;
-        os << "|======================|"<<endl;
-        os << "|======================|"<<endl;
-
-
-        map<int, map <int, double> >::const_iterator it2;
-        for(it2 = distance_vectors.begin(); it2 != distance_vectors.end(); ++it2)
-        {
-            int myNeh = it2->first;
-
-            os << endl;
-            os << "|======================|"<<endl;
-            os << "|           "<<myNeh<<"          |"<<endl;
-            os << "|======================|"<<endl;
-
-
-            map<int, double> costNeh = it2->second;
-
-            map<int, double>::const_iterator it3;
-            for(it3 = costNeh.begin(); it3 != costNeh.end(); ++it3)
-            {
-                int dest = it3->first;
-                int cost_to = (int) it3->second;
-                if(cost_to > 9) os << "|     "<<dest<<"     |     "<<cost_to<<"   |"<<endl;
-                else os << "|     "<<dest<<"     |     "<<cost_to<<"    |"<<endl;
-            }
-            os << "|======================|"<<endl << endl;
-        }
-        return os;
     }
+    return os;
+}
 
 #endif

@@ -41,13 +41,12 @@ public:
 
     map<int, map< int, TopoLink > > topo;
 
-
-#if defined(DISTANCEVECTOR)
-            map<int, map< int, double > > distance_vectors;
-            map<int, double> cost;
-            map<int, int> hop;
-            void updateTable(unsigned int dest, unsigned int next, double latency);
-        #endif
+    #if defined(DISTANCEVECTOR)
+    map<int, map< int, double > > distance_vectors;
+    map<int, double> cost;
+    map<int, int> hop;
+    void updateTable(unsigned int dest, unsigned int next, double latency);
+    #endif
 
     Table();
     Table(const Table &);
@@ -55,12 +54,12 @@ public:
     Table &operator=(const Table &);
     ostream &Print(ostream &os) const;
 
-#if defined(LINKSTATE)
+    #if defined(LINKSTATE)
     map<int, map< int, double > > topology;
     map<int, double> neighbor_table;
     map<int, int> hop;
     map<int, double> cost;
-#endif
+    #endif
 
 };
 

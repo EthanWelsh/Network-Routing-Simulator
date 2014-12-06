@@ -33,8 +33,6 @@ public:
 
     void findImprove();
     void Flood(RoutingMessage *m);
-    // Anything else
-
 
     map<int, int> message_seqs;
     int seq;

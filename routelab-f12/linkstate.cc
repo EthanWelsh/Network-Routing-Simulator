@@ -5,6 +5,7 @@ LinkState::LinkState(unsigned n, SimulationContext *c, double b, double l) : Nod
     seq = 0;
 }
 
+
 LinkState::LinkState(const LinkState &rhs) :
         Node(rhs)
 {
@@ -12,23 +13,21 @@ LinkState::LinkState(const LinkState &rhs) :
     seq = 0;
 }
 
+
 LinkState &LinkState::operator=(const LinkState &rhs)
 {
     Node::operator=(rhs);
     return *this;
 }
 
+
 LinkState::~LinkState()
 {
 }
 
-/** Write the following functions.  They currently have dummy implementations **/
-
-
 
 void LinkState::LinkHasBeenUpdated(Link *l)
 {
-
     cerr<<endl<<endl;
     cerr<<"***********************************************"<<endl;
     cerr<<"***********************************************"<<endl;
@@ -89,6 +88,7 @@ void LinkState::Flood(RoutingMessage *m)
     SendToNeighbors(m);
 }
 
+// Class created for purposes of the PQ.
 class myNode
 {
     int node;
@@ -123,7 +123,6 @@ public:
 
     int costToNode;
 };
-
 
 
 void LinkState::findImprove()
@@ -193,6 +192,7 @@ void LinkState::TimeOut()
     cerr << *this << " got a timeout: (ignored)" << endl;
 }
 
+
 Node *LinkState::GetNextHop(Node *destination)
 {
     findImprove();
@@ -205,10 +205,12 @@ Node *LinkState::GetNextHop(Node *destination)
     return n;
 }
 
+
 Table *LinkState::GetRoutingTable()
 {
-    return NULL;
+    return routing_table;
 }
+
 
 ostream &LinkState::Print(ostream &os) const
 {
