@@ -41,12 +41,10 @@ void LinkState::LinkHasBeenUpdated(Link *l)
 
     cerr<<routing_table<<endl;
 
-    cerr<<"SENDING MESSAGE TO NEIGHBORS (from " << GetNumber() << ")"<<endl;
-
-
     seq++;
 
-    cerr<<"SEQ = " << seq << endl;
+    cerr<< "("<<GetNumber()<<") SENDING MESSAGE TO NEIGHBORS (" << seq << ")"<<endl;
+
 
     SendToNeighbors(new RoutingMessage(routing_table.neighbor_table, GetNumber(), seq));
 
@@ -77,20 +75,17 @@ void LinkState::ProcessIncomingRoutingMessage(RoutingMessage *m)
         }
         else
         {
-            cerr<<"DISCARDING message. I already have a SEQ num of "<< message_seqs[m->src_node] << " from " << m->seq << endl;
+            //cerr<< "(" <<GetNumber() << ") DISCARDING message. I already have a SEQ num of "<< message_seqs[m->src_node] << " from " << m->seq << endl;
         }
-
     }
 
-    cerr << "ROUTING MESSAGE: (" << m->src_node << " -> " << GetNumber() << ") : " << m->seq << endl;
-
-
+    cerr << "(" <<GetNumber() << ") ROUTING MESSAGE: (" << m->src_node << " -> " << GetNumber() << ") : " << m->seq << endl;
 }
 
 
 void LinkState::Flood(RoutingMessage *m)
 {
-    cerr<<"FLOODING: "<<m->src_node << " (" << m->seq << ")" <<endl;
+    cerr<<"(" <<GetNumber()<< ") FLOODING: "<<m->src_node << " (" << m->seq << ")" <<endl;
     SendToNeighbors(m);
 }
 
@@ -99,7 +94,6 @@ void LinkState::Flood(RoutingMessage *m)
 
 class myNode
 {
-    int costToNode;
     int node;
     int src;
 
@@ -129,6 +123,8 @@ public:
     {
         return src;
     }
+
+    int costToNode;
 };
 
 
