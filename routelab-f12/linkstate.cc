@@ -208,7 +208,7 @@ Node *LinkState::GetNextHop(Node *destination)
 
 Table *LinkState::GetRoutingTable()
 {
-    return routing_table;
+    return &routing_table;
 }
 
 
