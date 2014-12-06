@@ -1,6 +1,3 @@
-#define LINKSTATE
-
-
 #include <vector>
 #include "table.h"
 #include "messages.h"

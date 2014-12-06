@@ -1,5 +1,3 @@
-#define LINKSTATE
-
 #ifndef _messages
 #define _messages
 

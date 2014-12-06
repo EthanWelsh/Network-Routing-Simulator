@@ -1,5 +1,3 @@
-#define LINKSTATE
-
 #ifndef _table
 #define _table
 

@@ -1,5 +1,3 @@
-#define LINKSTATE
-
 #include "messages.h"
 
 RoutingMessage::RoutingMessage()
