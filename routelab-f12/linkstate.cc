@@ -131,10 +131,10 @@ public:
 
 void LinkState::findImprove()
 {
-    routing_table.cost.clear();
+    /*routing_table.cost.clear();
     routing_table.hop.clear();
 
-    /*int me = GetNumber();
+    int me = GetNumber();
     priority_queue<myNode> pq;
 
     routing_table.cost[me] = 0;
@@ -187,7 +187,8 @@ void LinkState::findImprove()
                 }
             }
         }
-    } */
+    }
+    */
 }
 
 
@@ -198,10 +199,7 @@ void LinkState::TimeOut()
 
 Node *LinkState::GetNextHop(Node *destination)
 {
-    Node *n = new Node(0, NULL, 0, 0);
-    //n->SetNumber(routing_table.hop[destination->GetNumber()]);
-
-    return n;
+    return NULL;
 }
 
 Table *LinkState::GetRoutingTable()
