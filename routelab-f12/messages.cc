@@ -41,7 +41,7 @@ unsigned int RoutingMessage::getSrc()
 }
 #endif
 
-#if defined(LINKSTATE)
+//#if defined(LINKSTATE)
 
 RoutingMessage::RoutingMessage(map<int, double> ccc, unsigned int src, int s) // Initialize with src, dest, and latency
 {
@@ -55,4 +55,4 @@ map<int, double> RoutingMessage::getNeighborTable()
 }
 
 
-#endif
+//#endif

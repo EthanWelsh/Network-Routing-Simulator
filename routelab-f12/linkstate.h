@@ -35,7 +35,7 @@ public:
     void Flood(RoutingMessage *m);
     // Anything else
 
-    priority_queue<int> pq;
+
     map<int, int> message_seqs;
     int seq;
 

@@ -21,7 +21,6 @@ LinkState &LinkState::operator=(const LinkState &rhs)
 
 LinkState::~LinkState()
 {
-
 }
 
 /** Write the following functions.  They currently have dummy implementations **/
@@ -138,8 +137,103 @@ void LinkState::Flood(RoutingMessage *m)
     SendToNeighbors(m);
 }
 
+
+
+
+class myNode
+{
+    int costToNode;
+    int node;
+    int src;
+
+public:
+
+    myNode(int n, int c, int s) : node(n), costToNode(c), src(s)
+    {
+    }
+
+    friend bool operator<(const myNode &x, const myNode &y)
+    {
+        if (x.costToNode > y.costToNode) return true;
+        else return false;
+    }
+
+    int getNode()const
+    {
+        return node;
+    }
+
+    int getCost()const
+    {
+        return costToNode;
+    }
+
+    int getSrc()const
+    {
+        return src;
+    }
+};
+
+
+
 void LinkState::findImprove()
 {
+    int me = GetNumber();
+    priority_queue<myNode> pq;
+
+    routing_table.cost[me] = 0;
+
+    typedef std::map<int, double>::iterator it_type;
+    for(it_type it1 = routing_table.neighbor_table.begin(); it1 != routing_table.neighbor_table.end(); it1++)
+    {
+        int num_of_this_neighbor = it1->first;
+        double cost_to_this_neighbor = it1->second;
+
+        routing_table.cost[num_of_this_neighbor] = cost_to_this_neighbor;
+        routing_table.hop[num_of_this_neighbor] = num_of_this_neighbor;
+
+        pq.push(myNode(num_of_this_neighbor, cost_to_this_neighbor, num_of_this_neighbor));
+    }
+
+    myNode currentNode(0,0,0);
+    while(pq.size() > 0)
+    {
+        currentNode = pq.top();
+        pq.pop();
+
+        int curr_num = currentNode.getNode();
+        double curr_cost = currentNode.getCost();
+
+        map<int, double> curr_node_table = routing_table.topology[curr_num];
+
+        for(it_type it2 = routing_table.neighbor_table.begin(); it2 != routing_table.neighbor_table.end(); it2++)
+        {
+            int neighbor_of_curr = it2->first;
+            double cost_to_neightbor_of_curr = it2->second + curr_cost;
+
+            if(routing_table.cost.find(neighbor_of_curr) == routing_table.cost.end())
+            { // could not find
+                routing_table.cost[neighbor_of_curr] = cost_to_neightbor_of_curr;
+                pq.push(myNode(neighbor_of_curr, cost_to_neightbor_of_curr, currentNode.getSrc()));
+            }
+            else
+            {
+                if(cost_to_neightbor_of_curr < routing_table.cost[neighbor_of_curr])
+                {
+                    routing_table.cost[neighbor_of_curr] = cost_to_neightbor_of_curr;
+                }
+            }
+
+
+
+
+        }
+
+
+
+    }
+
+
 
 
 
